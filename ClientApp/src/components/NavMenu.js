@@ -5,7 +5,6 @@ const NavMenu = (props) => {
     const [collapsed, setCollapsed] = useState(true);
 
     const toggleNavbar = () => {
-        console.log("collapsing navbar");
         return setCollapsed(!collapsed);
     }
 

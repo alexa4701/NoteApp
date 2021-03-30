@@ -1,12 +1,13 @@
 import React, { useState, useEffect } from 'react';
-import { Row, Col } from 'reactstrap'
+import { Row, Col } from 'reactstrap';
 import NoteList from './NoteList';
 import axios from 'axios';
 
 const Home = () => {
     const [currentNotebookId, setCurrentNotebookId] = useState(0);
     const [notebook, setNotebook] = useState([]);
-    const [currentListsOpen, setCurrentListsOpen] = useState([])
+    const [currentListsOpen, setCurrentListsOpen] = useState([]);
+    const [addNoteModalShown, setAddNoteModalShown] = useState(false);
 
     // HTTP GET all note lists in the current notebook
     useEffect(() => {
@@ -21,11 +22,19 @@ const Home = () => {
             });
     }, []);
 
-    const handleListOpen = (id) => {
-        const size = notebook.noteLists.length;
-        let newListsOpen = new Array(size).fill('').map((listOpen, index) => listOpen = currentListsOpen[index]);
-        newListsOpen[id] = !newListsOpen[id]
-        setCurrentListsOpen(newListsOpen);
+    const handleListOpen = (event) => {
+        if(!event.target.className.includes("btn")) {
+            const size = notebook.noteLists.length;
+            const listId = event.target.getAttribute("data-list-id");
+            let newListsOpen = new Array(size).fill('').map((listOpen, index) => listOpen = currentListsOpen[index]);
+    
+            newListsOpen[listId] = !newListsOpen[listId]
+            setCurrentListsOpen(newListsOpen);
+        }
+    }
+
+    const toggleAddNoteModal = () => {
+        setAddNoteModalShown(!addNoteModalShown);
     }
 
     return (
@@ -40,10 +49,12 @@ const Home = () => {
                                         key ={noteList.id} 
                                         noteList={noteList} 
                                         stateValues={{
-                                            "open": currentListsOpen[noteList.id]
+                                            "open": currentListsOpen[noteList.id],
+                                            "addOpen": addNoteModalShown
                                         }}
                                         handlers={{
-                                            "open": () => handleListOpen(noteList.id)
+                                            "open": handleListOpen,
+                                            "toggleAdd": toggleAddNoteModal
                                         }}
                                     />
                         }) 

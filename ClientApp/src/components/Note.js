@@ -1,11 +1,10 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { ButtonGroup, Collapse, ListGroupItem } from 'reactstrap';
 
 const NoteSummary = ({ note, handleOpen }) => {
     return (
-        <div className="note-summary">
+        <div className="note-summary" onClick={handleOpen}>
             {note.title} 
-            <button className="btn btn-secondary" onClick={handleOpen}>open</button>
         </div>
     )
 }
@@ -26,17 +25,11 @@ const NoteCollapse = ({ note, open }) => {
     )
 }
 
-const Note = ({ note }) => {
-    const [open, setOpen] = useState(false);
-
-    const handleOpen = () => {
-        setOpen(!open);
-    }
-
+const Note = ({ note, stateValues, handlers }) => {
     return (
-        <ListGroupItem key={note.id}>
-            <NoteSummary note={note} handleOpen={handleOpen} />
-            <NoteCollapse note={note} open={open} />
+        <ListGroupItem data-list-id={note.noteListId} data-note-id={note.id}>
+            <NoteSummary note={note} handleOpen={handlers.open} />
+            <NoteCollapse note={note} open={stateValues.open} />
         </ListGroupItem>
     )
 }
