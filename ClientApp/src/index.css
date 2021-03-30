@@ -18,8 +18,26 @@ code {
 
 .app {
   margin-top: 10px;
+  padding-top: 10px;
   background-color: #e6e4e2;
   -webkit-box-shadow: 0px 10px 32px 1px rgba(0,0,0,0.75);
   -moz-box-shadow: 0px 10px 32px 1px rgba(0,0,0,0.75);
   box-shadow: 0px 10px 32px 1px rgba(0,0,0,0.75);
+}
+
+.notebook-title {
+  text-align: center;
+}
+
+.note-list {
+  margin-top: 20px;
+}
+
+.note-summary {
+  display: flex;
+  justify-content: space-between;
+}
+
+.note-btns button {
+  margin-right: 5px;
 }
