@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Collapse, ListGroupItem } from 'reactstrap';
+import { ButtonGroup, Collapse, ListGroupItem } from 'reactstrap';
 
 const NoteCollapse = ({ note, expanded }) => {
     return (
@@ -7,6 +7,11 @@ const NoteCollapse = ({ note, expanded }) => {
             <ul>
                 <li>Title: "{note.title}"</li>
                 <li>Description: "{note.description}"</li>
+                <br/>
+                <ButtonGroup className="note-btns">
+                    <button className="btn btn-secondary">edit</button>
+                    <button className="btn btn-danger">delete</button>
+                </ButtonGroup>
             </ul>
         </Collapse>
     )
@@ -16,11 +21,7 @@ const NoteSummary = ({ note, handleExpand }) => {
     return (
         <div className="note-summary">
             {note.title} 
-            <div className="note-btns">
-                <button onClick={handleExpand}>expand</button>
-                <button>edit</button>
-                <button>delete</button>
-            </div>
+            <button className="btn btn-secondary" onClick={handleExpand}>expand</button>
         </div>
     )
 }

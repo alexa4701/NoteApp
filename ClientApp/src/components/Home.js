@@ -17,7 +17,6 @@ const Home = () => {
             });
     }, []);
 
-    console.log(notebook.noteLists);
     return (
         <Row>
             <Col xs="1"></Col>
