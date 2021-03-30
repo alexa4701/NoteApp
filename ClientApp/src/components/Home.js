@@ -4,18 +4,29 @@ import NoteList from './NoteList';
 import axios from 'axios';
 
 const Home = () => {
-    const [notebookShown, setNotebookShown] = useState(0);
+    const [currentNotebookId, setCurrentNotebookId] = useState(0);
     const [notebook, setNotebook] = useState([]);
+    const [currentListsOpen, setCurrentListsOpen] = useState([])
 
     // HTTP GET all note lists in the current notebook
     useEffect(() => {
         axios
-            .get(`http://localhost:3001/noteBooks/${notebookShown}`)
+            .get(`http://localhost:3001/noteBooks/${currentNotebookId}`)
             .then(response => {
                 const initialNotebook = response.data;
+                const initialListsOpen = new Array(initialNotebook.noteLists.length).fill(false);
+
                 setNotebook(initialNotebook);
+                setCurrentListsOpen(initialListsOpen);
             });
     }, []);
+
+    const handleListOpen = (id) => {
+        const size = notebook.noteLists.length;
+        let newListsOpen = new Array(size).fill('').map((listOpen, index) => listOpen = currentListsOpen[index]);
+        newListsOpen[id] = !newListsOpen[id]
+        setCurrentListsOpen(newListsOpen);
+    }
 
     return (
         <Row>
@@ -24,7 +35,18 @@ const Home = () => {
                 <h2 className="notebook-title">{notebook.title}</h2>
                 <ul>
                     {(notebook.noteLists) 
-                        ? notebook.noteLists.map(noteList => <NoteList key ={noteList.id} noteList={noteList}/>) 
+                        ? notebook.noteLists.map(noteList => {
+                            return <NoteList 
+                                        key ={noteList.id} 
+                                        noteList={noteList} 
+                                        stateValues={{
+                                            "open": currentListsOpen[noteList.id]
+                                        }}
+                                        handlers={{
+                                            "open": () => handleListOpen(noteList.id)
+                                        }}
+                                    />
+                        }) 
                         : "loading notebook..." }
                 </ul>
             </Col>

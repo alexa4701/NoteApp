@@ -1,9 +1,18 @@
 import React, { useState } from 'react';
 import { ButtonGroup, Collapse, ListGroupItem } from 'reactstrap';
 
-const NoteCollapse = ({ note, expanded }) => {
+const NoteSummary = ({ note, handleOpen }) => {
     return (
-        <Collapse isOpen={expanded}>
+        <div className="note-summary">
+            {note.title} 
+            <button className="btn btn-secondary" onClick={handleOpen}>open</button>
+        </div>
+    )
+}
+
+const NoteCollapse = ({ note, open }) => {
+    return (
+        <Collapse isOpen={open}>
             <ul>
                 <li>Title: "{note.title}"</li>
                 <li>Description: "{note.description}"</li>
@@ -17,26 +26,17 @@ const NoteCollapse = ({ note, expanded }) => {
     )
 }
 
-const NoteSummary = ({ note, handleExpand }) => {
-    return (
-        <div className="note-summary">
-            {note.title} 
-            <button className="btn btn-secondary" onClick={handleExpand}>expand</button>
-        </div>
-    )
-}
-
 const Note = ({ note }) => {
-    const [expanded, setExpanded] = useState(false);
+    const [open, setOpen] = useState(false);
 
-    const handleExpand = () => {
-        setExpanded(!expanded);
+    const handleOpen = () => {
+        setOpen(!open);
     }
 
     return (
         <ListGroupItem key={note.id}>
-            <NoteSummary note={note} handleExpand={handleExpand} />
-            <NoteCollapse note={note} expanded={expanded} />
+            <NoteSummary note={note} handleOpen={handleOpen} />
+            <NoteCollapse note={note} open={open} />
         </ListGroupItem>
     )
 }
