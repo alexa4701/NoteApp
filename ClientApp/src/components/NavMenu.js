@@ -19,10 +19,7 @@ const NavMenu = (props) => {
                         <NavLink href="/">Home</NavLink>
                     </NavItem>
                     <NavItem>
-                        <NavLink href="/">About</NavLink>
-                    </NavItem>
-                    <NavItem>
-                        <NavLink href="/">Contact</NavLink>
+                        <NavLink href="/contact">Contact</NavLink>
                     </NavItem>
                 </Nav>
             </Collapse>
