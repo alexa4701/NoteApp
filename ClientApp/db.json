@@ -4,99 +4,96 @@
             "id": 0,
             "title": "My Notebook",
             "userId": 0,
-            "noteLists": [
-                {
-                    "id": 0,
-                    "noteBookId": 0,
-                    "title": "My Note List",
-                    "notes": [
-                        {
-                            "id": 0,
-                            "noteListId": 0,
-                            "title": "My note",
-                            "description": "My really long note description paragraph.",
-                            "complete": false
-                        },
-                        {
-                            "id": 1,
-                            "noteListId": 0,
-                            "title": "My note",
-                            "description": "My really long note description pcaragraph.",
-                            "complete": false
-                        },
-                        {
-                            "id": 2,
-                            "noteListId": 0,
-                            "title": "My note",
-                            "description": "My really long note description paragraph.",
-                            "complete": false
-                        },
-                        {
-                            "id": 3,
-                            "noteListId": 0,
-                            "title": "My note",
-                            "description": "My really long note description paragraph.",
-                            "complete": false
-                        },
-                        {
-                            "id": 4,
-                            "noteListId": 0,
-                            "title": "My note",
-                            "description": "My really long note description paragraph.",
-                            "complete": false
-                        }
-                    ]
-                },
-                {
-                    "id": 1,
-                    "noteBookId": 0,
-                    "title": "Note List 2",
-                    "notes": [
-                        {
-                            "id": 0,
-                            "noteListId": 1,
-                            "title": "My note",
-                            "description": "My really long note description paragraph.",
-                            "complete": false
-                        },
-                        {
-                            "id": 1,
-                            "noteListId": 1,
-                            "title": "My note",
-                            "description": "My really long note description paragraph.",
-                            "complete": false
-                        }
-                    ]
-                },
-                {
-                    "id": 2,
-                    "noteBookId": 0,
-                    "title": "Note List 3",
-                    "notes": [
-                        {
-                            "id": 0,
-                            "noteListId": 2,
-                            "title": "My note",
-                            "description": "My really long note description paragraph.",
-                            "complete": false
-                        },
-                        {
-                            "id": 1,
-                            "noteListId": 2,
-                            "title": "My note",
-                            "description": "My really long note description paragraph.",
-                            "complete": false
-                        },
-                        {
-                            "id": 2,
-                            "noteListId": 2,
-                            "title": "My note",
-                            "description": "My really long note description paragraph.",
-                            "complete": false
-                        }
-                    ]
-                }
-            ]
+            
+        }
+    ],
+    "noteLists": [
+        {
+            "id": 0,
+            "noteBookId": 0,
+            "title": "My Note List",
+        },
+        {
+            "id": 1,
+            "noteBookId": 0,
+            "title": "Note List 2",
+        },
+        {
+            "id": 2,
+            "noteBookId": 0,
+            "title": "Note List 3",
+        }
+    ],
+    "notes": [
+        {
+            "id": 0,
+            "noteListId": 0,
+            "title": "My note",
+            "description": "My really long note description paragraph.",
+            "complete": false
+        },
+        {
+            "id": 1,
+            "noteListId": 0,
+            "title": "My note",
+            "description": "My really long note description pcaragraph.",
+            "complete": false
+        },
+        {
+            "id": 2,
+            "noteListId": 0,
+            "title": "My note",
+            "description": "My really long note description paragraph.",
+            "complete": false
+        },
+        {
+            "id": 3,
+            "noteListId": 0,
+            "title": "My note",
+            "description": "My really long note description paragraph.",
+            "complete": false
+        },
+        {
+            "id": 4,
+            "noteListId": 0,
+            "title": "My note",
+            "description": "My really long note description paragraph.",
+            "complete": false
+        },
+        {
+            "id": 5,
+            "noteListId": 1,
+            "title": "My note",
+            "description": "My really long note description paragraph.",
+            "complete": false
+        },
+        {
+            "id": 6,
+            "noteListId": 1,
+            "title": "My note",
+            "description": "My really long note description paragraph.",
+            "complete": false
+        },
+        {
+            "id": 7,
+            "noteListId": 2,
+            "title": "My note",
+            "description": "My really long note description paragraph.",
+            "complete": false
+        },
+        {
+            "id": 8,
+            "noteListId": 2,
+            "title": "My note",
+            "description": "My really long note description paragraph.",
+            "complete": false
+        },
+        {
+            "id": 9,
+            "noteListId": 2,
+            "title": "My note",
+            "description": "My really long note description paragraph.",
+            "complete": false
         }
     ]
 }

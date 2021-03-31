@@ -17,13 +17,18 @@ const NoteList = ({ noteList, stateValues, handlers }) => {
     }
 
     return (
-        <ListGroup key={noteList.id} className="note-list" data-list-id={noteList.id}>
+        <ListGroup className="note-list" data-list-id={noteList.id}>
             <NoteAddModal 
                 stateValues={{
-                    "open": stateValues.addOpen
+                    "open": stateValues.addOpen,
+                    "newTitle": stateValues.newTitle,
+                    "newDescription": stateValues.newDescription
                 }} 
                 handlers={{
-                    "toggle": handlers.toggleAdd
+                    "toggle": handlers.toggleAdd,
+                    "addNote": handlers.addNote,
+                    "newTitleChange": handlers.newTitleChange,
+                    "newDescriptionChange": handlers.newDescriptionChange,
                 }}
             />
             <ListGroupItem className="note-list-header" onClick={handlers.open} data-list-id={noteList.id} >

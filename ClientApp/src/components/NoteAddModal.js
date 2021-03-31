@@ -1,21 +1,23 @@
 import React from 'react';
-import { ButtonGroup, Form, FormGroup, Input, Modal, ModalHeader, ModalBody } from 'reactstrap';
+import { ButtonGroup, Form, FormGroup, Input, Label, Modal, ModalHeader, ModalBody } from 'reactstrap';
 
 const NoteAddModal = ({ stateValues, handlers }) => {
     return (
         <Modal isOpen={stateValues.open} toggle={handlers.toggle}>
             <ModalHeader>Add a new note</ModalHeader>
             <ModalBody>
-                <Form>
+                <Form onSubmit={handlers.addNote}>
                     <FormGroup>
-                        <Input defaultValue="Note Title..."></Input>
+                        <Label for="new-title">New Note Title</Label>
+                        <Input name="new-title" value={stateValues.newTitle} onChange={handlers.newTitleChange}></Input>
                     </FormGroup>
                     <FormGroup>
-                        <Input type="textarea" defaultValue="Description of the note..."></Input>
+                        <Label for="new-description">New Note Description</Label>
+                        <Input name="new-description" value={stateValues.newDescription} onChange={handlers.newDescriptionChange} type="textarea"></Input>
                     </FormGroup>
                     <FormGroup>
                         <ButtonGroup>
-                            <button>submit</button>
+                            <button type="submit">submit</button>
                         </ButtonGroup>
                     </FormGroup>
                 </Form>
