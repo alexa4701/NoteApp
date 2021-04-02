@@ -53,21 +53,21 @@ namespace NoteApp.Domain.Models
                     Title="yet another note",
                     Description="longer description text",
                     Complete=false,
-                    ListId=1
+                    ListId=0
                 };
                 var Note6 = new Note 
                 { 
                     Title="wow! another note",
                     Description="longer description text",
                     Complete=false,
-                    ListId=2
+                    ListId=0
                 };
                 var Note7 = new Note 
                 { 
                     Title="you guessed it - another note",
                     Description="longer description text",
                     Complete=false,
-                    ListId=2
+                    ListId=0
                 };
 
                 // Create and add test notebooks to db
@@ -80,10 +80,7 @@ namespace NoteApp.Domain.Models
                             Note1,
                             Note2,
                             Note3,
-                            Note4,
-                            Note5,
-                            Note6,
-                            Note7
+                            Note4
                         }
                     },
                     new NoteBook
@@ -91,23 +88,9 @@ namespace NoteApp.Domain.Models
                         Title="Notebook 2",
                         Notes= new List<Note>
                         {
-                            Note2,
-                            Note1,
-                            Note4,
-                            Note2,
-                            Note5
-                        }
-                    },
-                    new NoteBook
-                    {
-                        Title="Test Notebook 3",
-                        Notes= new List<Note>
-                        {
-                            Note2,
-                            Note1,
-                            Note4,
-                            Note2,
-                            Note5
+                            Note5,
+                            Note6,
+                            Note7
                         }
                     }
                 );
