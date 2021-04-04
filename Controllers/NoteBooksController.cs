@@ -20,15 +20,36 @@ namespace NoteApp.Controllers
             _context = context;
         }
 
+        // Get all NoteBooks in table - doesn't get child entities NoteLists
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<NoteBook>>> GetNoteBooks()
+        public async Task<ActionResult<List<NoteBook>>> GetNoteBooks()
         {
-            return await _context.NoteBooks.ToListAsync();
+            List<NoteBook> noteBooks = await _context.NoteBooks
+                .AsNoTracking()
+                .ToListAsync();
+
+            return noteBooks;
         }
 
+        // Get NoteBook by Id - also gets child entity NoteLists for selected NoteBook
+        [HttpGet("{noteBookId}")]
+        public async Task<ActionResult<NoteBook>> GetNoteBook(long noteBookId)
+        {
+            NoteBook noteBook = await _context.NoteBooks
+                .AsNoTracking()
+                .Include(nb => nb.NoteLists)
+                .Where(nb => nb.Id == noteBookId)
+                .FirstOrDefaultAsync();
+            
+
+            return noteBook;
+        }
+
+        // Create a new empty NoteBook
         [HttpPost]
         public async Task<ActionResult<NoteBook>> CreateNoteBook(NoteBook noteBook)
         {
+            noteBook.NoteLists = new List<NoteList>();
             _context.NoteBooks.Add(noteBook);
             await _context.SaveChangesAsync();
 

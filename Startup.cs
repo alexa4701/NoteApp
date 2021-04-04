@@ -24,8 +24,12 @@ namespace NoteApp
         {
             services.AddDbContext<NoteAppContext>(opt => 
                     opt.UseSqlServer(Configuration.GetConnectionString("NoteAppContext")));
-                    
-            services.AddControllersWithViews();
+
+            services.AddControllersWithViews().AddJsonOptions(options =>
+            {
+                options.JsonSerializerOptions.ReferenceHandler = System.Text.Json.Serialization.ReferenceHandler.Preserve;
+                options.JsonSerializerOptions.PropertyNamingPolicy = null;
+            });
 
             // In production, the React files will be served from this directory
             services.AddSpaStaticFiles(configuration =>
