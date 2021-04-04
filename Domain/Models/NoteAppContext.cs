@@ -8,7 +8,8 @@ namespace NoteApp.Domain.Models
         {
         }
 
-        public DbSet<NoteBook> NoteBooks { get; set; }
         public DbSet<Note> Notes { get; set; }
+        public DbSet<NoteList> NoteLists { get; set; }
+        public DbSet<NoteBook> NoteBooks { get; set; }
     }
 }

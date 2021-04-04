@@ -13,87 +13,101 @@ namespace NoteApp.Domain.Models
             using (var context = new NoteAppContext(serviceProvider
                     .GetRequiredService<DbContextOptions<NoteAppContext>>()))
             {
-                if(context.NoteBooks.Any() || context.Notes.Any())
+                if(context.NoteBooks.Any())
                 {
                     // DB already has content
                     return;
                 }
-
-                // Create test notes
-                var Note1 = new Note 
-                { 
-                    Title="a note",
-                    Description="longer description text",
-                    Complete=false,
-                    ListId=0
-                };
-                var Note2 = new Note 
-                { 
-                    Title="second note",
-                    Description="longer description text",
-                    Complete=false,
-                    ListId=0
-                };
-                var Note3 = new Note 
-                { 
-                    Title="third note",
-                    Description="longer description text",
-                    Complete=false,
-                    ListId=1
-                };
-                var Note4 = new Note 
-                { 
-                    Title="another note",
-                    Description="longer description text",
-                    Complete=false,
-                    ListId=1
-                };
-                var Note5 = new Note 
-                { 
-                    Title="yet another note",
-                    Description="longer description text",
-                    Complete=false,
-                    ListId=0
-                };
-                var Note6 = new Note 
-                { 
-                    Title="wow! another note",
-                    Description="longer description text",
-                    Complete=false,
-                    ListId=0
-                };
-                var Note7 = new Note 
-                { 
-                    Title="you guessed it - another note",
-                    Description="longer description text",
-                    Complete=false,
-                    ListId=0
-                };
-
-                // Create and add test notebooks to db
+                
                 context.AddRange(
                     new NoteBook
                     {
-                        Title="my notebook",
-                        Notes= new List<Note> 
-                        {
-                            Note1,
-                            Note2,
-                            Note3,
-                            Note4
-                        }
+                        Title = "My 1st Notebook",
+                        NoteLists = 
+                            new List<NoteList>
+                            {
+                                new NoteList
+                                {
+                                    Title = "Note List 1",
+                                    Notes = 
+                                        new List<Note>
+                                        {
+                                            new Note 
+                                            { 
+                                                Title = "A note",
+                                                Description = "note description",
+                                                Complete = true
+                                            },
+                                            new Note
+                                            {
+                                                Title = "Second note",
+                                                Description = "another note description",
+                                                Complete = false 
+                                            },
+                                            new Note
+                                            {
+                                                Title = "Third note",
+                                                Description = "wow a third description",
+                                                Complete = false
+                                            }
+                                        }
+                                },
+                                new NoteList
+                                {
+                                    Title = "Grocery list",
+                                    Notes = 
+                                        new List<Note>
+                                        {
+                                            new Note
+                                            {
+                                                Title = "Tomatoes",
+                                                Description = "Get tomatoes",
+                                                Complete = false
+                                            },
+                                            new Note
+                                            {
+                                                Title = "Jalapenos",
+                                                Description = "Get jalapenos",
+                                                Complete = false
+                                            }
+                                        }
+                                }
+                            }
                     },
                     new NoteBook
                     {
-                        Title="Notebook 2",
-                        Notes= new List<Note>
-                        {
-                            Note5,
-                            Note6,
-                            Note7
-                        }
-                    }
-                );
+                        Title = "Second test notebook",
+                        NoteLists = 
+                        new List<NoteList>
+                            {
+                                new NoteList
+                                {
+                                    Title = "Clean the house",
+                                    Notes = 
+                                        new List<Note>
+                                        {
+                                            new Note 
+                                            { 
+                                                Title = "Dust",
+                                                Description = "spread dust around the house",
+                                                Complete = true
+                                            },
+                                            new Note
+                                            {
+                                                Title = "Vacuum",
+                                                Description = "remove all gas from home",
+                                                Complete = false 
+                                            },
+                                            new Note
+                                            {
+                                                Title = "Disinfect",
+                                                Description = "use the nozzle",
+                                                Complete = false
+                                            }
+                                        }
+                                }
+                            }
+                    });
 
                 context.SaveChanges();
             }
