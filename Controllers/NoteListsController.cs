@@ -35,11 +35,11 @@ namespace NoteApp.Controllers
 
         // Create a NoteList and add to Notebook => Notebook.Id == noteBookId arg
         [HttpPost("{noteBookId}")]
-        public async Task<ActionResult<NoteList>> CreateNoteList(long noteBookId, NoteList noteList)
+        public async Task<ActionResult<NoteList>> CreateNoteListInBook(long noteBookId, NoteList noteList)
         {
-            noteList.NoteBook = _context.NoteBooks
+            noteList.NoteBook = await _context.NoteBooks
                 .Include(nb => nb.NoteLists)
-                .FirstOrDefault(nb => nb.Id == noteBookId);
+                .FirstOrDefaultAsync(nb => nb.Id == noteBookId);
             noteList.Notes = new List<Note>();
             noteList.NoteBook.NoteLists.Add(noteList);
             _context.NoteLists.Add(noteList);

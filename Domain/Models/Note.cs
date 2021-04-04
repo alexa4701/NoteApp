@@ -7,6 +7,6 @@ namespace NoteApp.Domain.Models
         public string Description { get; set; }
         public bool Complete { get; set; }
 
-        public NoteBook NoteList { get; set; }
+        public NoteList NoteList { get; set; }
    }
 }
