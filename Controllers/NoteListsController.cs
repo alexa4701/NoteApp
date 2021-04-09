@@ -19,6 +19,7 @@ namespace NoteApp.Controllers
             _context = context;
         }
 
+        // GET: api/NoteLists/5
         // Get NoteList by note list id - gets parent entity NoteBook and child entities Notes
         [HttpGet("{noteListId}")]
         public async Task<ActionResult<NoteList>> GetNoteList(long noteListId)
@@ -27,12 +28,12 @@ namespace NoteApp.Controllers
                 .AsNoTracking()
                 .Include(nl => nl.NoteBook)
                 .Include(nl => nl.Notes)
-                .Where(nl => nl.Id == noteListId)
-                .FirstOrDefaultAsync();
+                .FirstOrDefaultAsync(nl => nl.Id == noteListId);
 
             return noteList;
         }
 
+        // POST: api/NoteLists/5
         // Create a NoteList and add to Notebook => Notebook.Id == noteBookId arg
         [HttpPost("{noteBookId}")]
         public async Task<ActionResult<NoteList>> CreateNoteListInBook(long noteBookId, NoteList noteList)
@@ -47,6 +48,30 @@ namespace NoteApp.Controllers
             await _context.SaveChangesAsync();
 
             return CreatedAtAction("GetNoteList", new { id = noteList.Id }, noteList);
+        }
+
+        // DELETE: api/NoteLists/5
+        // Delete NoteList with id == noteListId, and all child notes
+        [HttpDelete("{noteListId}")]
+        public async Task<IActionResult> DeleteNoteList(long noteListId)
+        {
+            NoteList noteList = await _context.NoteLists
+                .Include(nl => nl.Notes)
+                .FirstOrDefaultAsync(nl => nl.Id == noteListId);
+            if (noteList == null)
+            {
+                return NotFound();
+            }
+            
+            foreach(Note note in noteList.Notes)
+            {
+                _context.Notes.Remove(note);
+            }
+
+            _context.NoteLists.Remove(noteList);
+            await _context.SaveChangesAsync();
+
+            return NoContent();
         }
     }
 }

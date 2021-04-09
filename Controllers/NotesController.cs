@@ -19,6 +19,7 @@ namespace NoteApp.Controllers
             _context = context;
         }
 
+        // GET: api/Notes/5
         // Get Note by Note.Id
         [HttpGet("{noteId}")]
         public async Task<ActionResult<Note>> GetNote(long noteId)
@@ -26,12 +27,12 @@ namespace NoteApp.Controllers
             Note note = await _context.Notes
                 .AsNoTracking()
                 .Include(n => n.NoteList)
-                .Where(n => n.Id == noteId)
-                .FirstOrDefaultAsync();
+                .FirstOrDefaultAsync(n => n.Id == noteId);
 
             return note;
         }
 
+        // POST: api/Notes/5
         // Create Note and add to NoteList with NoteList.Id == noteListId
         [HttpPost("{noteListId}")]
         public async Task<ActionResult<Note>> CreateNoteInList(long noteListId, Note note)
@@ -46,6 +47,23 @@ namespace NoteApp.Controllers
             await _context.SaveChangesAsync();
 
             return CreatedAtAction("GetNote", new { id = note.Id }, note);
+        }
+
+        // DELETE: api/Notes/5
+        // Delete the note with id == noteId
+        [HttpDelete("{noteId}")]
+        public async Task<IActionResult> DeleteNote(long noteId)
+        {
+            Note note = await _context.Notes.FirstOrDefaultAsync(n => n.Id == noteId);
+            if (note == null)
+            {
+                return NotFound();
+            }
+
+            _context.Notes.Remove(note);
+            await _context.SaveChangesAsync();
+
+            return NoContent();
         }
 
     }
