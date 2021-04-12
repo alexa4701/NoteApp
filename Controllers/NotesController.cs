@@ -49,6 +49,38 @@ namespace NoteApp.Controllers
             return CreatedAtAction("GetNote", new { id = note.Id }, note);
         }
 
+        // PUT: api/Notes/5
+        // Replace the selected note obj with updated note obj
+        [HttpPut("{noteId}")]
+        public async Task<IActionResult> UpdateNote(long noteId, Note newNote)
+        {
+            if (noteId != newNote.Id)
+            {
+                return BadRequest();
+            }
+
+            Note note = await _context.Notes.FirstOrDefaultAsync(n => n.Id == noteId);
+            if (note == null)
+            {
+                return NotFound();
+            }
+
+            note.Title = newNote.Title;
+            note.Description = newNote.Description;
+            note.Complete = newNote.Complete;
+
+            try
+            {
+                await _context.SaveChangesAsync();
+            }
+            catch (DbUpdateConcurrencyException) when (!(_context.Notes.Any(n => n.Id == noteId)))
+            {
+                return NotFound();
+            }
+
+            return NoContent();
+        }
+
         // DELETE: api/Notes/5
         // Delete the note with id == noteId
         [HttpDelete("{noteId}")]

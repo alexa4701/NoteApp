@@ -50,6 +50,36 @@ namespace NoteApp.Controllers
             return CreatedAtAction("GetNoteList", new { id = noteList.Id }, noteList);
         }
 
+        // PUT: api/NoteLists/5
+        // Replace selected NoteList title with update NoteList title
+        [HttpPut("{noteListId}")]
+        public async Task<IActionResult> UpdateNoteListTitle(long noteListId, NoteList newNoteList)
+        {
+            if (noteListId != newNoteList.Id)
+            {
+                return BadRequest();
+            }
+
+            NoteList noteList = await _context.NoteLists.FirstOrDefaultAsync(nl => nl.Id == noteListId);
+            if (noteList == null)
+            {
+                return NotFound();
+            }
+
+            noteList.Title = newNoteList.Title;
+
+            try
+            {
+                await _context.SaveChangesAsync();
+            }
+            catch (DbUpdateConcurrencyException) when (!(_context.NoteLists.Any(nl => nl.Id == noteListId)))
+            {
+                return NotFound();
+            }
+
+            return NoContent();
+        }
+
         // DELETE: api/NoteLists/5
         // Delete NoteList with id == noteListId, and all child notes
         [HttpDelete("{noteListId}")]

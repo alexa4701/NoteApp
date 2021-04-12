@@ -58,6 +58,37 @@ namespace NoteApp.Controllers
             return CreatedAtAction(nameof(GetNoteBooks), new { id = noteBook.Id }, noteBook);
         }
 
+        // PUT: api/NoteBooks/5
+        // Replace selected NoteBook title with updated notebook title.
+        [HttpPut("{noteBookId}")]
+        public async Task<IActionResult> UpdateNoteBookTitle(long noteBookId, NoteBook newNoteBook)
+        {
+            if (noteBookId != newNoteBook.Id)
+            {
+                return BadRequest();
+            }
+
+            NoteBook noteBook = await _context.NoteBooks.FirstOrDefaultAsync(nl => nl.Id == noteBookId);
+
+            if (noteBook == null)
+            {
+                return NotFound();
+            }
+
+            noteBook.Title = newNoteBook.Title;
+
+            try
+            {
+                await _context.SaveChangesAsync();
+            }
+            catch (DbUpdateConcurrencyException) when (!(_context.NoteBooks.Any(nb => nb.Id == noteBookId)))
+            {
+                return NotFound();
+            }
+
+            return NoContent();
+        }
+
         // DELETE: api/NoteBooks/5
         // Delete NoteBook with id == noteBookId and all child NoteLists and Notes
         [HttpDelete("{noteBookId}")]
