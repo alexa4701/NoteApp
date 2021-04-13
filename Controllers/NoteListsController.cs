@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -9,6 +10,7 @@ using NoteApp.Domain.Models;
 
 namespace NoteApp.Controllers
 {
+    [EnableCors("CorsPolicy")]
     [Route("api/NoteLists")]
     [ApiController]
     public class NoteListsController : ControllerBase
@@ -22,15 +24,19 @@ namespace NoteApp.Controllers
         // GET: api/NoteLists/5
         // Get NoteList by note list id - gets parent entity NoteBook and child entities Notes
         [HttpGet("{noteListId}")]
-        public async Task<ActionResult<NoteList>> GetNoteList(long noteListId)
+        public async Task<ActionResult<NoteListDTO>> GetNoteList(long noteListId)
         {
             NoteList noteList = await _context.NoteLists
                 .AsNoTracking()
                 .Include(nl => nl.NoteBook)
                 .Include(nl => nl.Notes)
                 .FirstOrDefaultAsync(nl => nl.Id == noteListId);
+            if (noteList == null)
+            {
+                return NotFound();
+            }
 
-            return noteList;
+            return NoteListToDTO(noteList);
         }
 
         // POST: api/NoteLists/5
@@ -102,6 +108,33 @@ namespace NoteApp.Controllers
             await _context.SaveChangesAsync();
 
             return NoContent();
+        }
+
+        private static NoteListDTO NoteListToDTO(NoteList noteList)
+        {
+            NoteListDTO noteListDTO = new NoteListDTO();
+            List<NoteDTO> noteDTOs = new List<NoteDTO>();
+
+            // Initialize noteListDTO
+            noteListDTO.Id = noteList.Id;
+            noteListDTO.Title = noteList.Title;
+            noteListDTO.NoteBookId = noteList.NoteBook.Id;
+
+            foreach (Note note in noteList.Notes)
+            {
+                noteDTOs.Add(
+                    new NoteDTO
+                    {
+                        Id = note.Id,
+                        Title = note.Title,
+                        Description = note.Description,
+                        Complete = note.Complete,
+                        NoteListId = noteList.Id
+                    });
+            }
+            noteListDTO.Notes = noteDTOs.ToArray();
+
+            return noteListDTO;
         }
     }
 }

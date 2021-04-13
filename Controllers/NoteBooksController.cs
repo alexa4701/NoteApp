@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -9,6 +10,7 @@ using NoteApp.Domain.Models;
 
 namespace NoteApp.Controllers
 {
+    [EnableCors("CorsPolicy")]
     [Route("api/NoteBooks")]
     [ApiController]
     public class NoteBooksController : ControllerBase
@@ -23,27 +25,31 @@ namespace NoteApp.Controllers
         // GET: api/NoteBooks
         // Get all NoteBooks in table - doesn't get child entities NoteLists
         [HttpGet]
-        public async Task<ActionResult<List<NoteBook>>> GetNoteBooks()
+        public async Task<ActionResult<NoteBookDTO[]>> GetNoteBooks()
         {
-            List<NoteBook> noteBooks = await _context.NoteBooks
+            List<NoteBookDTO> noteBooks = await _context.NoteBooks
                 .AsNoTracking()
+                .Select(nb => NoteBookToDTO(nb))
                 .ToListAsync();
 
-            return noteBooks;
+            return noteBooks.ToArray();
         }
 
         // GET: api/NoteBooks/5
         // Get NoteBook by Id - also gets child entity NoteLists for selected NoteBook
         [HttpGet("{noteBookId}")]
-        public async Task<ActionResult<NoteBook>> GetNoteBook(long noteBookId)
+        public async Task<ActionResult<NoteBookDTO>> GetNoteBook(long noteBookId)
         {
             NoteBook noteBook = await _context.NoteBooks
                 .AsNoTracking()
                 .Include(nb => nb.NoteLists)
                 .FirstOrDefaultAsync(nb => nb.Id == noteBookId);
-            
+            if (noteBook == null)
+            {
+                return NotFound();
+            }
 
-            return noteBook;
+            return NoteBookToDTO(noteBook);
         }
 
         // POST: api/NoteBooks
@@ -113,7 +119,7 @@ namespace NoteApp.Controllers
                     return NotFound();
                 }
 
-                foreach(Note note in noteListObj.Notes)
+                foreach (Note note in noteListObj.Notes)
                 {
                     _context.Notes.Remove(note);
                 }
@@ -124,6 +130,39 @@ namespace NoteApp.Controllers
             await _context.SaveChangesAsync();
 
             return NoContent();
+        }
+
+        private static NoteBookDTO NoteBookToDTO(NoteBook noteBook)
+        {
+            NoteBookDTO noteBookDTO = new NoteBookDTO();
+
+            // Initialize NoteBookDTO
+            noteBookDTO.Id = noteBook.Id;
+            noteBookDTO.Title = noteBook.Title;
+
+            if (noteBook.NoteLists == null)
+            {
+                noteBookDTO.NoteLists = null;
+            }
+            else
+            {
+                List<NoteListDTO> noteListDTOs = new List<NoteListDTO>();
+                // Convert NoteLists to NoteListDTOs, and add to noteListDTOs
+                foreach (NoteList noteList in noteBook.NoteLists)
+                {
+                    noteListDTOs.Add(
+                        new NoteListDTO
+                        {
+                            Id = noteList.Id,
+                            Title = noteList.Title,
+                            NoteBookId = noteBook.Id,
+                            Notes = null
+                        });
+                }
+                noteBookDTO.NoteLists = noteListDTOs.ToArray();
+            }   
+
+            return noteBookDTO;
         }
     }
 }

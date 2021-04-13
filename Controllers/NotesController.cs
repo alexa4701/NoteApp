@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -9,6 +10,7 @@ using NoteApp.Domain.Models;
 
 namespace NoteApp.Controllers
 {
+    [EnableCors("CorsPolicy")]
     [Route("api/Notes")]
     [ApiController]
     public class NotesController : ControllerBase
@@ -22,14 +24,18 @@ namespace NoteApp.Controllers
         // GET: api/Notes/5
         // Get Note by Note.Id
         [HttpGet("{noteId}")]
-        public async Task<ActionResult<Note>> GetNote(long noteId)
+        public async Task<ActionResult<NoteDTO>> GetNote(long noteId)
         {
             Note note = await _context.Notes
                 .AsNoTracking()
                 .Include(n => n.NoteList)
                 .FirstOrDefaultAsync(n => n.Id == noteId);
+            if (note == null)
+            {
+                return NotFound();
+            }
 
-            return note;
+            return NoteToDTO(note);
         }
 
         // POST: api/Notes/5
@@ -98,5 +104,14 @@ namespace NoteApp.Controllers
             return NoContent();
         }
 
+        private static NoteDTO NoteToDTO(Note note) => 
+            new NoteDTO
+            {
+                Id = note.Id,
+                Title = note.Title,
+                Description = note.Description,
+                Complete = note.Complete,
+                NoteListId = note.NoteList.Id
+            };
     }
 }
