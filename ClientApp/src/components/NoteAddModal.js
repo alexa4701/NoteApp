@@ -1,5 +1,5 @@
-import React from 'react';
-import { ButtonGroup, Form, FormGroup, Input, Label, Modal, ModalHeader, ModalBody } from 'reactstrap';
+import React from 'react'
+import { ButtonGroup, Form, FormGroup, Input, Label, Modal, ModalHeader, ModalBody } from 'reactstrap'
 
 const NoteAddModal = ({ stateValues, handlers }) => {
     return (
@@ -26,4 +26,4 @@ const NoteAddModal = ({ stateValues, handlers }) => {
     )
 }
 
-export default NoteAddModal;
+export default NoteAddModal

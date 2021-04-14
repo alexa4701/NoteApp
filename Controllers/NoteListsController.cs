@@ -116,25 +116,27 @@ namespace NoteApp.Controllers
             List<NoteDTO> noteDTOs = new List<NoteDTO>();
 
             // Initialize noteListDTO
-            noteListDTO.Id = noteList.Id;
-            noteListDTO.Title = noteList.Title;
-            noteListDTO.NoteBookId = noteList.NoteBook.Id;
+            noteListDTO.id = noteList.Id;
+            noteListDTO.title = noteList.Title;
+            noteListDTO.noteBookId = noteList.NoteBook.Id;
 
             foreach (Note note in noteList.Notes)
             {
-                noteDTOs.Add(
-                    new NoteDTO
-                    {
-                        Id = note.Id,
-                        Title = note.Title,
-                        Description = note.Description,
-                        Complete = note.Complete,
-                        NoteListId = noteList.Id
-                    });
+                noteDTOs.Add(NoteToDTO(note));
             }
-            noteListDTO.Notes = noteDTOs.ToArray();
+            noteListDTO.notes = noteDTOs.ToArray();
 
             return noteListDTO;
         }
+
+        private static NoteDTO NoteToDTO(Note note) => 
+            new NoteDTO
+            {
+                id = note.Id,
+                title = note.Title,
+                description = note.Description,
+                complete = note.Complete,
+                noteListId = note.NoteList.Id
+            };
     }
 }

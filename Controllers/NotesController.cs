@@ -107,11 +107,11 @@ namespace NoteApp.Controllers
         private static NoteDTO NoteToDTO(Note note) => 
             new NoteDTO
             {
-                Id = note.Id,
-                Title = note.Title,
-                Description = note.Description,
-                Complete = note.Complete,
-                NoteListId = note.NoteList.Id
+                id = note.Id,
+                title = note.Title,
+                description = note.Description,
+                complete = note.Complete,
+                noteListId = note.NoteList.Id
             };
     }
 }

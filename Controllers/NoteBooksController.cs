@@ -36,13 +36,16 @@ namespace NoteApp.Controllers
         }
 
         // GET: api/NoteBooks/5
-        // Get NoteBook by Id - also gets child entity NoteLists for selected NoteBook
+        // Get NoteBook by Id - also gets child entities, NoteLists and Notes, for selected NoteBook
         [HttpGet("{noteBookId}")]
         public async Task<ActionResult<NoteBookDTO>> GetNoteBook(long noteBookId)
         {
             NoteBook noteBook = await _context.NoteBooks
                 .AsNoTracking()
                 .Include(nb => nb.NoteLists)
+                .ThenInclude(nl => nl.Notes)
+                .AsSplitQuery()
+                .OrderBy(nb => nb.Id)
                 .FirstOrDefaultAsync(nb => nb.Id == noteBookId);
             if (noteBook == null)
             {
@@ -137,12 +140,12 @@ namespace NoteApp.Controllers
             NoteBookDTO noteBookDTO = new NoteBookDTO();
 
             // Initialize NoteBookDTO
-            noteBookDTO.Id = noteBook.Id;
-            noteBookDTO.Title = noteBook.Title;
+            noteBookDTO.id = noteBook.Id;
+            noteBookDTO.title = noteBook.Title;
 
             if (noteBook.NoteLists == null)
             {
-                noteBookDTO.NoteLists = null;
+                noteBookDTO.noteLists = null;
             }
             else
             {
@@ -150,19 +153,41 @@ namespace NoteApp.Controllers
                 // Convert NoteLists to NoteListDTOs, and add to noteListDTOs
                 foreach (NoteList noteList in noteBook.NoteLists)
                 {
-                    noteListDTOs.Add(
-                        new NoteListDTO
-                        {
-                            Id = noteList.Id,
-                            Title = noteList.Title,
-                            NoteBookId = noteBook.Id,
-                            Notes = null
-                        });
+                    noteListDTOs.Add(NoteListToDTO(noteList));
                 }
-                noteBookDTO.NoteLists = noteListDTOs.ToArray();
+                noteBookDTO.noteLists = noteListDTOs.ToArray();
             }   
 
             return noteBookDTO;
         }
+
+        private static NoteListDTO NoteListToDTO(NoteList noteList)
+        {
+            NoteListDTO noteListDTO = new NoteListDTO();
+            List<NoteDTO> noteDTOs = new List<NoteDTO>();
+
+            // Initialize noteListDTO
+            noteListDTO.id = noteList.Id;
+            noteListDTO.title = noteList.Title;
+            noteListDTO.noteBookId = noteList.NoteBook.Id;
+
+            foreach (Note note in noteList.Notes)
+            {
+                noteDTOs.Add(NoteToDTO(note));
+            }
+            noteListDTO.notes = noteDTOs.ToArray();
+
+            return noteListDTO;
+        }
+
+        private static NoteDTO NoteToDTO(Note note) => 
+            new NoteDTO
+            {
+                id = note.Id,
+                title = note.Title,
+                description = note.Description,
+                complete = note.Complete,
+                noteListId = note.NoteList.Id
+            };
     }
 }

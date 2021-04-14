@@ -1,19 +1,19 @@
-import React, { useState } from 'react';
-import { ButtonGroup, Collapse, ListGroup, ListGroupItem } from 'reactstrap';
-import Note from './Note';
-import NoteAddModal from './NoteAddModal';
+import React, { useState } from 'react'
+import { ButtonGroup, Collapse, ListGroup, ListGroupItem } from 'reactstrap'
+import Note from './Note'
+import NoteAddModal from './NoteAddModal'
 
 
 const NoteList = ({ noteList, stateValues, handlers }) => {
-    const size = noteList.notes.length;
-    const [currentNotesOpen, setCurrentNotesOpen] = useState(new Array(size).fill(false));
+    const size = noteList.notes.length
+    const [currentNotesOpen, setCurrentNotesOpen] = useState(new Array(size).fill(false))
 
     const handleNoteOpen = (event) => {
-        const noteId = event.target.parentElement.getAttribute("data-note-id");
-        let newNotesOpen = new Array(size).fill('').map((noteOpen, index) => noteOpen = currentNotesOpen[index]);
-
-        newNotesOpen[noteId] = !newNotesOpen[noteId]
-        setCurrentNotesOpen(newNotesOpen);
+        const noteId = event.target.parentElement.getAttribute("data-note-id")
+        let newNotesOpen = new Array(size).fill('').map((noteOpen, index) => noteOpen = currentNotesOpen[index])
+        let selectedNoteIndex = noteList.notes.findIndex(note => note.id == noteId)
+        newNotesOpen[selectedNoteIndex] = !newNotesOpen[selectedNoteIndex]
+        setCurrentNotesOpen(newNotesOpen)
     }
 
     return (
@@ -44,7 +44,7 @@ const NoteList = ({ noteList, stateValues, handlers }) => {
                         key={note.id} 
                         note={note}
                         stateValues={{
-                            "open": currentNotesOpen[note.id]
+                            "open": currentNotesOpen[noteList.notes.findIndex(n => n.id == note.id)]
                         }}
                         handlers={{
                             "open": handleNoteOpen
@@ -56,4 +56,4 @@ const NoteList = ({ noteList, stateValues, handlers }) => {
     )
 }
 
-export default NoteList;
+export default NoteList

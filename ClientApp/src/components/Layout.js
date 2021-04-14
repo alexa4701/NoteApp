@@ -1,6 +1,6 @@
-import React from 'react';
-import NavMenu from './NavMenu';
-import { Container } from 'reactstrap';
+import React from 'react'
+import NavMenu from './NavMenu'
+import { Container } from 'reactstrap'
 
 
 const Layout = (props) => {
@@ -14,4 +14,4 @@ const Layout = (props) => {
     )
 }
 
-export default Layout;
+export default Layout

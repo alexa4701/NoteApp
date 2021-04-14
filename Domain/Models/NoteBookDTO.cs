@@ -4,8 +4,8 @@ namespace NoteApp.Domain.Models
 {
     public class NoteBookDTO
     {
-        public long Id { get; set; }
-        public string Title { get; set; }
-        public NoteListDTO[] NoteLists { get; set; }
+        public long id { get; set; }
+        public string title { get; set; }
+        public NoteListDTO[] noteLists { get; set; }
     }
 }

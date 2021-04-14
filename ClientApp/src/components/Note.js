@@ -1,5 +1,5 @@
-import React from 'react';
-import { ButtonGroup, Collapse, ListGroupItem } from 'reactstrap';
+import React from 'react'
+import { ButtonGroup, Collapse, ListGroupItem } from 'reactstrap'
 
 const NoteSummary = ({ note, handleOpen }) => {
     return (
@@ -34,4 +34,4 @@ const Note = ({ note, stateValues, handlers }) => {
     )
 }
 
-export default Note;
+export default Note

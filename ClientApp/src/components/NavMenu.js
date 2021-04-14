@@ -1,11 +1,11 @@
-import React, { useState } from 'react';
-import { Collapse, Navbar, NavbarToggler, NavbarBrand, Nav, NavItem, NavLink } from 'reactstrap';
+import React, { useState } from 'react'
+import { Collapse, Navbar, NavbarToggler, NavbarBrand, Nav, NavItem, NavLink } from 'reactstrap'
 
 const NavMenu = (props) => {
-    const [collapsed, setCollapsed] = useState(true);
+    const [collapsed, setCollapsed] = useState(true)
 
     const toggleNavbar = () => {
-        return setCollapsed(!collapsed);
+        return setCollapsed(!collapsed)
     }
 
     return(
@@ -26,4 +26,4 @@ const NavMenu = (props) => {
     )
 }
 
-export default NavMenu;
+export default NavMenu

@@ -2,10 +2,10 @@ namespace NoteApp.Domain.Models
 {
     public class NoteDTO
     {
-        public long Id { get; set; }
-        public string Title { get; set; }
-        public string Description { get; set; }
-        public bool Complete { get; set; }
-        public long NoteListId { get; set; }
+        public long id { get; set; }
+        public string title { get; set; }
+        public string description { get; set; }
+        public bool complete { get; set; }
+        public long noteListId { get; set; }
     }
 }
