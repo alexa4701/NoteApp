@@ -2,7 +2,7 @@ import React, { useState, useEffect, version } from 'react'
 import { Row, Col } from 'reactstrap'
 import NoteList from './NoteList'
 import notebookService from '../services/notebooks'
-import axios from 'axios'
+import noteService from '../services/notes'
 
 /*
     Todo: 
@@ -16,67 +16,67 @@ const Home = () => {
     const [notebook, setNotebook] = useState([])
     const [currentListsOpen, setCurrentListsOpen] = useState([])
     const [addNoteModalShown, setAddNoteModalShown] = useState(false)
-    const [addingToListId, setAddingToListId] = useState(0)
-    const [newTitle, setNewTitle] = useState("")
-    const [newDescription, setNewDescription] = useState("")
+    const [currentListId, setCurrentListId] = useState(0)
+    const [noteTitle, setNewTitle] = useState("")
+    const [noteDescription, setNewDescription] = useState("")
 
-    useEffect(() => {
+    const getNoteBook = () => {
         notebookService
             .get(currentNotebookId)
             .then(notebook => {
                 setNotebook(notebook)
             })
-        }, [])
+    }
+
+    useEffect(getNoteBook, [])
+
+    const toggleAddNoteModal = (event) => {
+        console.log(notebook)
+        if(addNoteModalShown) {
+            setNewTitle("")
+            setNewDescription("")
+            setAddNoteModalShown(!addNoteModalShown)
+        } else {
+            setCurrentListId(event.target.getAttribute("data-list-id"))
+            setAddNoteModalShown(!addNoteModalShown)
+        }
+    }
 
     const handleListOpen = (event) => {
         if(!event.target.className.includes("btn")) {
             const size = notebook.noteLists.length
             const listId = event.target.getAttribute("data-list-id")
             let newListsOpen = new Array(size).fill('').map((listOpen, index) => listOpen = currentListsOpen[index])
-            let selectedListIndex = notebook.noteLists.findIndex(nl => nl.id == listId)
+            let selectedListIndex = notebook.noteLists.findIndex(list => list.id == listId)
 
             newListsOpen[selectedListIndex] = !newListsOpen[selectedListIndex]
             setCurrentListsOpen(newListsOpen)
         }
     }
 
-    const toggleAddNoteModal = (event) => {
-        if(addNoteModalShown) {
-            setNewTitle("")
-            setNewDescription("")
-            setAddNoteModalShown(!addNoteModalShown)
-        } else {
-            setAddingToListId(event.target.getAttribute("data-list-id"))
-            setAddNoteModalShown(!addNoteModalShown)
-        }
-    }
-
     const handleAddNote = (event) => {
         event.preventDefault()
         const newNote = {
-            "noteListId": addingToListId,
-            "title": newTitle,
-            "description": newDescription,
+            "noteListId": currentListId,
+            "title": noteTitle,
+            "description": noteDescription,
             "complete": false
         }
-        // replace with service
-        axios
-            .post(`http://localhost:3001/noteBooks/${currentNotebookId}/${addingToListId}`, newNote)
-            .then(response => {
-                console.log(response.data)
+        console.log(newNote)
+        noteService
+            .add(currentListId, newNote)
+            .then(() => {
+                getNoteBook()
+                toggleAddNoteModal()
             })
     }
 
-    const handleNewTitleChange = (event) => {
-        console.log(addingToListId)
-        console.log(event.target.value)
+    const handleNoteTitleChange = (event) => {
         setNewTitle(event.target.value)
 
     }
 
-    const handleNewDescriptionChange = (event) => {
-        console.log(addingToListId)
-        console.log(event.target.value)
+    const handleNoteDescriptionChange = (event) => {
         setNewDescription(event.target.value)
     }
 
@@ -87,22 +87,22 @@ const Home = () => {
                 <h2 className="notebook-title">{notebook.title}</h2>
                 <ul>
                     {(notebook.noteLists) 
-                        ? notebook.noteLists.map(nl => {
+                        ? notebook.noteLists.map(notelist => {
                             return <NoteList 
-                                        key ={nl.id} 
-                                        noteList={nl} 
+                                        key ={notelist.id} 
+                                        noteList={notelist} 
                                         stateValues={{
-                                            "open": currentListsOpen[notebook.noteLists.findIndex(openNl => openNl.id == nl.id)],
+                                            "open": currentListsOpen[notebook.noteLists.findIndex(openList => openList.id == notelist.id)],
                                             "addOpen": addNoteModalShown,
-                                            "newNoteTitle": newTitle,
-                                            "newNoteDescription": newDescription
+                                            "newNoteTitle": noteTitle,
+                                            "newNoteDescription": noteDescription
                                         }}
                                         handlers={{
                                             "open": handleListOpen,
                                             "toggleAdd": toggleAddNoteModal,
                                             "addNote": handleAddNote,
-                                            "newTitleChange": handleNewTitleChange,
-                                            "newDescriptionChange": handleNewDescriptionChange
+                                            "newTitleChange": handleNoteTitleChange,
+                                            "newDescriptionChange": handleNoteDescriptionChange
                                         }}
                                     />
                         }) 
