@@ -8,7 +8,7 @@ const NoteSummary = ({ note, handlers }) => {
             {note.title} 
             <ButtonGroup className="note-btns float-right">
                 <button id="edit-note" className="btn btn-secondary" data-note-id={note.id} onClickCapture={handlers.toggleEdit}><i className="bi bi-pencil" data-note-id={note.id}></i></button>
-                <button id="delete-note" className="btn btn-secondary" data-note-id={note.id}><i className="bi bi-trash" data-note-id={note.id}></i></button>
+                <button id="delete-note" className="btn btn-secondary" data-note-id={note.id} onClickCapture={handlers.delete}><i className="bi bi-trash" data-note-id={note.id}></i></button>
             </ButtonGroup>
         </div>
     )
@@ -35,6 +35,11 @@ const Note = ({ note, stateValues, handlers }) => {
         handlers.toggleEdit(note, note.noteListId)
     }
 
+    const handleDelete = (event) => {
+        event.stopPropagation()
+        handlers.deleteNote(note.id)
+    }
+
     return (
         <ListGroupItem data-list-id={note.noteListId} data-note-id={note.id}>
             <NoteEditModal 
@@ -53,7 +58,8 @@ const Note = ({ note, stateValues, handlers }) => {
             <NoteSummary note={note} 
                 handlers={{
                     "open": handlers.open,
-                    "toggleEdit": toggleEdit
+                    "toggleEdit": toggleEdit,
+                    "delete": handleDelete,
                 }} 
             />
             <NoteCollapse note={note} open={stateValues.open} />

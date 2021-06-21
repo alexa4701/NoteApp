@@ -53,6 +53,7 @@ const NoteList = ({ noteList, stateValues, handlers }) => {
                             "open": handleNoteOpen,
                             "toggleEdit": handlers.toggleEditNote,
                             "editNote": handlers.editNote,
+                            "deleteNote": handlers.deleteNote,
                             "newTitleChange": handlers.noteTitleChange,
                             "newDescriptionChange": handlers.noteDescriptionChange,
                         }}

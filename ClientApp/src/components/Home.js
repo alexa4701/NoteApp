@@ -7,6 +7,7 @@ import noteService from '../services/notes'
 /*
     Todo: 
     Add validation for forms
+    Add confirmation for deleting
     Implement switching Notebooks
     Implement adding Notebooks, Notelists, notes.
     Implement deleting above items
@@ -102,9 +103,17 @@ const Home = () => {
             })
     }
 
+    const handleDeleteNote = (noteId) => {
+        console.log(`deleting note id: ${noteId}`)
+        noteService
+            .remove(noteId)
+            .then(() => {
+                getNoteBook()
+            })
+    }
+
     const handleNoteTitleChange = (event) => {
         setNoteTitle(event.target.value)
-
     }
 
     const handleNoteDescriptionChange = (event) => {
@@ -136,6 +145,7 @@ const Home = () => {
                                             "toggleEditNote": toggleEditNoteModal,
                                             "addNote": handleAddNote,
                                             "editNote": handleEditNote,
+                                            "deleteNote": handleDeleteNote,
                                             "noteTitleChange": handleNoteTitleChange,
                                             "noteDescriptionChange": handleNoteDescriptionChange
                                         }}
