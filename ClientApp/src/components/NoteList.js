@@ -20,22 +20,22 @@ const NoteList = ({ noteList, stateValues, handlers }) => {
         <ListGroup className="note-list" data-list-id={noteList.id}>
             <NoteAddModal 
                 stateValues={{
-                    "open": stateValues.addOpen,
-                    "newTitle": stateValues.newTitle,
-                    "newDescription": stateValues.newDescription
+                    "open": stateValues.addNoteOpen,
+                    "newTitle": stateValues.newNoteTitle,
+                    "newDescription": stateValues.newNoteDescription
                 }} 
                 handlers={{
-                    "toggle": handlers.toggleAdd,
+                    "toggle": handlers.toggleAddNote,
                     "addNote": handlers.addNote,
-                    "newTitleChange": handlers.newTitleChange,
-                    "newDescriptionChange": handlers.newDescriptionChange,
+                    "newTitleChange": handlers.noteTitleChange,
+                    "newDescriptionChange": handlers.noteDescriptionChange,
                 }}
             />
             <ListGroupItem className="note-list-header" onClick={handlers.open} data-list-id={noteList.id} >
-                <h2>{noteList.title}</h2>
+                <h2 className="note-list-title">{noteList.title}</h2>
                 <ButtonGroup className="note-list-btns" data-list-id={noteList.id}>
-                    <button className="btn btn-secondary" onClick={handlers.toggleAdd} data-list-id={noteList.id}>add note</button>
-                    <button className="btn btn-secondary" data-list-id={noteList.id}>edit</button>
+                    <button id="add-note" className="btn btn-secondary" onClickCapture={handlers.toggleAddNote} data-list-id={noteList.id}><i className="bi bi-file-earmark-plus"></i></button>
+                    <button id="edit-list" className="btn btn-secondary" data-list-id={noteList.id}><i className="bi bi-pencil"></i></button>
                 </ButtonGroup>
             </ListGroupItem>
             <Collapse isOpen={stateValues.open}>
@@ -44,10 +44,17 @@ const NoteList = ({ noteList, stateValues, handlers }) => {
                         key={note.id} 
                         note={note}
                         stateValues={{
-                            "open": currentNotesOpen[noteList.notes.findIndex(n => n.id == note.id)]
+                            "open": currentNotesOpen[noteList.notes.findIndex(n => n.id == note.id)],
+                            "editNoteOpen": stateValues.editNoteOpen,
+                            "newTitle": stateValues.newNoteTitle,
+                            "newDescription": stateValues.newNoteDescription
                         }}
                         handlers={{
-                            "open": handleNoteOpen
+                            "open": handleNoteOpen,
+                            "toggleEdit": handlers.toggleEditNote,
+                            "editNote": handlers.editNote,
+                            "newTitleChange": handlers.noteTitleChange,
+                            "newDescriptionChange": handlers.noteDescriptionChange,
                         }}
                     />
                 )}

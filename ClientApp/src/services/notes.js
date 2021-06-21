@@ -11,9 +11,14 @@ const add = (listId, note) => {
     return request.then(response => response.data)
 }
 
+const edit = (id, note) => {
+    const request = axios.put(`${baseURL}/${id}`, note)
+    return request.then(response => response.data)
+}
+
 const remove = (id) => {
     const request = axios.delete(`${baseURL}/${id}`)
     return request.then(response => response.data)
 }
 
-export default { get, add, remove }
+export default { get, add, edit, remove }

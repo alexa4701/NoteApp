@@ -1,4 +1,4 @@
-import React, { useState, useEffect, version } from 'react'
+import React, { useState, useEffect} from 'react'
 import { Row, Col } from 'reactstrap'
 import NoteList from './NoteList'
 import notebookService from '../services/notebooks'
@@ -6,7 +6,8 @@ import noteService from '../services/notes'
 
 /*
     Todo: 
-    Implement changing Notebooks
+    Add validation for forms
+    Implement switching Notebooks
     Implement adding Notebooks, Notelists, notes.
     Implement deleting above items
     Implement editing above items
@@ -16,9 +17,11 @@ const Home = () => {
     const [notebook, setNotebook] = useState([])
     const [currentListsOpen, setCurrentListsOpen] = useState([])
     const [addNoteModalShown, setAddNoteModalShown] = useState(false)
+    const [editNoteModalShown, setEditNoteModalShown] = useState(false)
     const [currentListId, setCurrentListId] = useState(0)
-    const [noteTitle, setNewTitle] = useState("")
-    const [noteDescription, setNewDescription] = useState("")
+    const [currentNoteId, setCurrentNoteId] = useState(0)
+    const [noteTitle, setNoteTitle] = useState("")
+    const [noteDescription, setNoteDescription] = useState("")
 
     const getNoteBook = () => {
         notebookService
@@ -31,27 +34,38 @@ const Home = () => {
     useEffect(getNoteBook, [])
 
     const toggleAddNoteModal = (event) => {
-        console.log(notebook)
+        event.stopPropagation()
         if(addNoteModalShown) {
-            setNewTitle("")
-            setNewDescription("")
-            setAddNoteModalShown(!addNoteModalShown)
+            setNoteTitle("")
+            setNoteDescription("")
         } else {
             setCurrentListId(event.target.getAttribute("data-list-id"))
-            setAddNoteModalShown(!addNoteModalShown)
         }
+        setAddNoteModalShown(!addNoteModalShown)
+    }
+
+    const toggleEditNoteModal = (note, listId) => {
+        if(editNoteModalShown) {
+            setNoteTitle("")
+            setNoteDescription("")
+        } else {
+            setNoteTitle(note.title)
+            setNoteDescription(note.description)
+            setCurrentNoteId(note.id)
+            setCurrentListId(listId)
+        }
+        setEditNoteModalShown(!editNoteModalShown)
     }
 
     const handleListOpen = (event) => {
-        if(!event.target.className.includes("btn")) {
-            const size = notebook.noteLists.length
-            const listId = event.target.getAttribute("data-list-id")
-            let newListsOpen = new Array(size).fill('').map((listOpen, index) => listOpen = currentListsOpen[index])
-            let selectedListIndex = notebook.noteLists.findIndex(list => list.id == listId)
+        event.stopPropagation()
+        const size = notebook.noteLists.length
+        const listId = event.target.getAttribute("data-list-id")
+        let newListsOpen = new Array(size).fill('').map((listOpen, index) => listOpen = currentListsOpen[index])
+        let selectedListIndex = notebook.noteLists.findIndex(list => list.id == listId)
 
-            newListsOpen[selectedListIndex] = !newListsOpen[selectedListIndex]
-            setCurrentListsOpen(newListsOpen)
-        }
+        newListsOpen[selectedListIndex] = !newListsOpen[selectedListIndex]
+        setCurrentListsOpen(newListsOpen)
     }
 
     const handleAddNote = (event) => {
@@ -71,13 +85,30 @@ const Home = () => {
             })
     }
 
+    const handleEditNote = (event) => {
+        event.preventDefault()
+        const newNote = {
+            "id": currentNoteId,
+            "noteListId": currentListId,
+            "title": noteTitle,
+            "description": noteDescription,
+            "complete": false // change later
+        }
+        noteService
+            .edit(currentNoteId, newNote)
+            .then(() => {
+                getNoteBook()
+                toggleEditNoteModal(newNote, currentListId)
+            })
+    }
+
     const handleNoteTitleChange = (event) => {
-        setNewTitle(event.target.value)
+        setNoteTitle(event.target.value)
 
     }
 
     const handleNoteDescriptionChange = (event) => {
-        setNewDescription(event.target.value)
+        setNoteDescription(event.target.value)
     }
 
     return (
@@ -93,16 +124,20 @@ const Home = () => {
                                         noteList={notelist} 
                                         stateValues={{
                                             "open": currentListsOpen[notebook.noteLists.findIndex(openList => openList.id == notelist.id)],
-                                            "addOpen": addNoteModalShown,
+                                            "currentNoteId": currentNoteId,
+                                            "addNoteOpen": addNoteModalShown,
+                                            "editNoteOpen": editNoteModalShown,
                                             "newNoteTitle": noteTitle,
                                             "newNoteDescription": noteDescription
                                         }}
                                         handlers={{
                                             "open": handleListOpen,
-                                            "toggleAdd": toggleAddNoteModal,
+                                            "toggleAddNote": toggleAddNoteModal,
+                                            "toggleEditNote": toggleEditNoteModal,
                                             "addNote": handleAddNote,
-                                            "newTitleChange": handleNoteTitleChange,
-                                            "newDescriptionChange": handleNoteDescriptionChange
+                                            "editNote": handleEditNote,
+                                            "noteTitleChange": handleNoteTitleChange,
+                                            "noteDescriptionChange": handleNoteDescriptionChange
                                         }}
                                     />
                         }) 
