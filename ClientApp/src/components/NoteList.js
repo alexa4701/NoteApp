@@ -4,6 +4,18 @@ import Note from './Note'
 import NoteAddModal from './NoteAddModal'
 
 
+const NoteListTitle = ({ title, editing }) => {
+    // if enabled - change title to input & button for editing/submitting
+    return (
+        <div>
+            {(editing) 
+                ? <h2 className="note-list-title">edit title enabled</h2>
+                : <h2 className="note-list-title">{title}</h2>
+            }
+        </div>
+    )
+}
+
 const NoteList = ({ noteList, stateValues, handlers }) => {
     const size = noteList.notes.length
     const [currentNotesOpen, setCurrentNotesOpen] = useState(new Array(size).fill(false))
@@ -16,9 +28,19 @@ const NoteList = ({ noteList, stateValues, handlers }) => {
         setCurrentNotesOpen(newNotesOpen)
     }
 
+    const handleListOpen = (event) => {
+        event.stopPropagation()
+        handlers.open(noteList.id)
+    }
+
     const toggleAddNote = (event) => {
         //event.stopPropagation()
         handlers.toggleAddNote(noteList.id)
+    }
+
+    const toggleEditList = (event) => {
+        event.stopPropagation()
+        handlers.toggleEditList(noteList.id)
     }
 
     return (
@@ -36,11 +58,14 @@ const NoteList = ({ noteList, stateValues, handlers }) => {
                     "newDescriptionChange": handlers.noteDescriptionChange,
                 }}
             />
-            <ListGroupItem className="note-list-header" onClick={handlers.open} data-list-id={noteList.id} >
-                <h2 className="note-list-title">{noteList.title}</h2>
+            <ListGroupItem className="note-list-header" onClick={handleListOpen} data-list-id={noteList.id} >
+                <NoteListTitle 
+                    title={noteList.title}
+                    editing={stateValues.editListOpen}
+                />
                 <ButtonGroup className="note-list-btns" data-list-id={noteList.id}>
                     <button id="add-note" className="btn btn-secondary" onClickCapture={toggleAddNote} data-list-id={noteList.id}><i className="bi bi-file-earmark-plus"></i></button>
-                    <button id="edit-list" className="btn btn-secondary" data-list-id={noteList.id}><i className="bi bi-pencil"></i></button>
+                    <button id="edit-list" className="btn btn-secondary" onClickCapture={toggleEditList} data-list-id={noteList.id}><i className="bi bi-pencil"></i></button>
                 </ButtonGroup>
             </ListGroupItem>
             <Collapse isOpen={stateValues.open}>

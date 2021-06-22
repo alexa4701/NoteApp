@@ -8,11 +8,10 @@ import noteService from '../services/notes'
     Todo: 
     Add validation for forms
     Add confirmation for deleting
-    Fix adding notes
     Implement switching Notebooks
-    Implement adding Notebooks, Notelists, notes.
-    Implement deleting above items
-    Implement editing above items
+    Implement adding Notebooks, Notelists.
+    Implement deleting Notebooks, Notelists
+    Implement editing Notelists
 */
 const Home = () => {
     const [currentNotebookId, setCurrentNotebookId] = useState(2)
@@ -20,6 +19,7 @@ const Home = () => {
     const [currentListsOpen, setCurrentListsOpen] = useState([])
     const [addNoteModalShown, setAddNoteModalShown] = useState(false)
     const [editNoteModalShown, setEditNoteModalShown] = useState(false)
+    const [editListShown, setEditListShown] = useState([]) // change to array
     const [currentListId, setCurrentListId] = useState(0)
     const [currentNoteId, setCurrentNoteId] = useState(0)
     const [noteTitle, setNoteTitle] = useState("")
@@ -29,7 +29,10 @@ const Home = () => {
         notebookService
             .get(currentNotebookId)
             .then(notebook => {
+                const size = notebook.noteLists.length
                 setNotebook(notebook)
+                setCurrentListsOpen(new Array(size).fill(false))
+                setEditListShown(new Array(size).fill(false))
             })
     }
 
@@ -59,10 +62,17 @@ const Home = () => {
         setEditNoteModalShown(!editNoteModalShown)
     }
 
-    const handleListOpen = (event) => {
-        event.stopPropagation()
+    const toggleEditList = (listId) => {
+        console.log("editing list title id:", listId)
         const size = notebook.noteLists.length
-        const listId = event.target.getAttribute("data-list-id")
+        let newEditListShown = new Array(size).fill('').map((listOpen, index) => listOpen = editListShown[index])
+        let selectedListIndex = notebook.noteLists.findIndex(list => list.id == listId)
+        newEditListShown[selectedListIndex] = !newEditListShown[selectedListIndex]
+        setEditListShown(newEditListShown)
+    }
+
+    const handleListOpen = (listId) => {
+        const size = notebook.noteLists.length
         let newListsOpen = new Array(size).fill('').map((listOpen, index) => listOpen = currentListsOpen[index])
         let selectedListIndex = notebook.noteLists.findIndex(list => list.id == listId)
 
@@ -136,6 +146,7 @@ const Home = () => {
                                             "currentNoteId": currentNoteId,
                                             "addNoteOpen": addNoteModalShown,
                                             "editNoteOpen": editNoteModalShown,
+                                            "editListOpen": editListShown[notebook.noteLists.findIndex(openList => openList.id == notelist.id)],
                                             "newNoteTitle": noteTitle,
                                             "newNoteDescription": noteDescription
                                         }}
@@ -143,6 +154,7 @@ const Home = () => {
                                             "open": handleListOpen,
                                             "toggleAddNote": toggleAddNoteModal,
                                             "toggleEditNote": toggleEditNoteModal,
+                                            "toggleEditList": toggleEditList,
                                             "addNote": handleAddNote,
                                             "editNote": handleEditNote,
                                             "deleteNote": handleDeleteNote,
