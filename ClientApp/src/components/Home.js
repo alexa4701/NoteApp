@@ -8,6 +8,7 @@ import noteService from '../services/notes'
     Todo: 
     Add validation for forms
     Add confirmation for deleting
+    Fix adding notes
     Implement switching Notebooks
     Implement adding Notebooks, Notelists, notes.
     Implement deleting above items
@@ -34,13 +35,13 @@ const Home = () => {
 
     useEffect(getNoteBook, [])
 
-    const toggleAddNoteModal = (event) => {
-        event.stopPropagation()
+    const toggleAddNoteModal = (listId) => {
         if(addNoteModalShown) {
             setNoteTitle("")
             setNoteDescription("")
         } else {
-            setCurrentListId(event.target.getAttribute("data-list-id"))
+            console.log(listId)
+            setCurrentListId(listId)
         }
         setAddNoteModalShown(!addNoteModalShown)
     }
@@ -77,7 +78,6 @@ const Home = () => {
             "description": noteDescription,
             "complete": false
         }
-        console.log(newNote)
         noteService
             .add(currentListId, newNote)
             .then(() => {

@@ -16,6 +16,11 @@ const NoteList = ({ noteList, stateValues, handlers }) => {
         setCurrentNotesOpen(newNotesOpen)
     }
 
+    const toggleAddNote = (event) => {
+        //event.stopPropagation()
+        handlers.toggleAddNote(noteList.id)
+    }
+
     return (
         <ListGroup className="note-list" data-list-id={noteList.id}>
             <NoteAddModal 
@@ -25,7 +30,7 @@ const NoteList = ({ noteList, stateValues, handlers }) => {
                     "newDescription": stateValues.newNoteDescription
                 }} 
                 handlers={{
-                    "toggle": handlers.toggleAddNote,
+                    "toggle": toggleAddNote,
                     "addNote": handlers.addNote,
                     "newTitleChange": handlers.noteTitleChange,
                     "newDescriptionChange": handlers.noteDescriptionChange,
@@ -34,7 +39,7 @@ const NoteList = ({ noteList, stateValues, handlers }) => {
             <ListGroupItem className="note-list-header" onClick={handlers.open} data-list-id={noteList.id} >
                 <h2 className="note-list-title">{noteList.title}</h2>
                 <ButtonGroup className="note-list-btns" data-list-id={noteList.id}>
-                    <button id="add-note" className="btn btn-secondary" onClickCapture={handlers.toggleAddNote} data-list-id={noteList.id}><i className="bi bi-file-earmark-plus"></i></button>
+                    <button id="add-note" className="btn btn-secondary" onClickCapture={toggleAddNote} data-list-id={noteList.id}><i className="bi bi-file-earmark-plus"></i></button>
                     <button id="edit-list" className="btn btn-secondary" data-list-id={noteList.id}><i className="bi bi-pencil"></i></button>
                 </ButtonGroup>
             </ListGroupItem>
