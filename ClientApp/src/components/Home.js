@@ -3,6 +3,7 @@ import { Row, Col } from 'reactstrap'
 import NoteList from './NoteList'
 import notebookService from '../services/notebooks'
 import noteService from '../services/notes'
+import notelistService from '../services/notelists'
 
 /*
     Todo: 
@@ -11,7 +12,6 @@ import noteService from '../services/notes'
     Implement switching Notebooks
     Implement adding Notebooks, Notelists.
     Implement deleting Notebooks, Notelists
-    Implement editing Notelists
 */
 const Home = () => {
     const [currentNotebookId, setCurrentNotebookId] = useState(2)
@@ -19,11 +19,12 @@ const Home = () => {
     const [currentListsOpen, setCurrentListsOpen] = useState([])
     const [addNoteModalShown, setAddNoteModalShown] = useState(false)
     const [editNoteModalShown, setEditNoteModalShown] = useState(false)
-    const [editListShown, setEditListShown] = useState([]) // change to array
+    const [editListShown, setEditListShown] = useState([])
     const [currentListId, setCurrentListId] = useState(0)
     const [currentNoteId, setCurrentNoteId] = useState(0)
     const [noteTitle, setNoteTitle] = useState("")
     const [noteDescription, setNoteDescription] = useState("")
+    const [listTitle, setListTitle] = useState("")
 
     const getNoteBook = () => {
         notebookService
@@ -63,10 +64,18 @@ const Home = () => {
     }
 
     const toggleEditList = (listId) => {
-        console.log("editing list title id:", listId)
         const size = notebook.noteLists.length
         let newEditListShown = new Array(size).fill('').map((listOpen, index) => listOpen = editListShown[index])
         let selectedListIndex = notebook.noteLists.findIndex(list => list.id == listId)
+        let selectedTitle = notebook.noteLists[selectedListIndex].title
+
+        if(!editListShown[selectedListIndex]) {
+            setCurrentListId(listId)
+            setListTitle(selectedTitle)
+        }
+        else {
+            setListTitle("")
+        }
         newEditListShown[selectedListIndex] = !newEditListShown[selectedListIndex]
         setEditListShown(newEditListShown)
     }
@@ -122,12 +131,37 @@ const Home = () => {
             })
     }
 
+    const handleEditList = (event) => {
+        if(event.key === "Enter") {
+            console.log("enter pressed")
+            if(listTitle !== "") {
+                console.log("title is not empty")
+                const newList = {
+                    "id": currentListId,
+                    "title": listTitle
+                }
+                notelistService
+                    .edit(currentListId, newList)
+                    .then(() => {
+                        getNoteBook()
+                    })
+            }
+            else {
+                alert("Title cannot be empty")
+            }            
+        }
+    }
+
     const handleNoteTitleChange = (event) => {
         setNoteTitle(event.target.value)
     }
 
     const handleNoteDescriptionChange = (event) => {
         setNoteDescription(event.target.value)
+    }
+
+    const handleListTitleChange = (event) => {
+        setListTitle(event.target.value)
     }
 
     return (
@@ -148,7 +182,8 @@ const Home = () => {
                                             "editNoteOpen": editNoteModalShown,
                                             "editListOpen": editListShown[notebook.noteLists.findIndex(openList => openList.id == notelist.id)],
                                             "newNoteTitle": noteTitle,
-                                            "newNoteDescription": noteDescription
+                                            "newNoteDescription": noteDescription,
+                                            "newListTitle": listTitle
                                         }}
                                         handlers={{
                                             "open": handleListOpen,
@@ -159,7 +194,9 @@ const Home = () => {
                                             "editNote": handleEditNote,
                                             "deleteNote": handleDeleteNote,
                                             "noteTitleChange": handleNoteTitleChange,
-                                            "noteDescriptionChange": handleNoteDescriptionChange
+                                            "noteDescriptionChange": handleNoteDescriptionChange,
+                                            "listTitleChange": handleListTitleChange,
+                                            "editList": handleEditList
                                         }}
                                     />
                         }) 

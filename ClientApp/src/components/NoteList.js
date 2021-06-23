@@ -4,12 +4,12 @@ import Note from './Note'
 import NoteAddModal from './NoteAddModal'
 
 
-const NoteListTitle = ({ title, editing }) => {
+const NoteListTitle = ({ title, stateValues, handlers }) => {
     // if enabled - change title to input & button for editing/submitting
     return (
         <div>
-            {(editing) 
-                ? <h2 className="note-list-title">edit title enabled</h2>
+            {(stateValues.editing) 
+                ? <input type="text" value={stateValues.newTitle} onChange={handlers.titleChange} onKeyUp={handlers.editList}></input>
                 : <h2 className="note-list-title">{title}</h2>
             }
         </div>
@@ -61,7 +61,14 @@ const NoteList = ({ noteList, stateValues, handlers }) => {
             <ListGroupItem className="note-list-header" onClick={handleListOpen} data-list-id={noteList.id} >
                 <NoteListTitle 
                     title={noteList.title}
-                    editing={stateValues.editListOpen}
+                    stateValues={{
+                        "editing": stateValues.editListOpen,
+                        "newTitle": stateValues.newListTitle
+                    }}
+                    handlers={{
+                        "titleChange": handlers.listTitleChange,
+                        "editList": handlers.editList
+                    }}
                 />
                 <ButtonGroup className="note-list-btns" data-list-id={noteList.id}>
                     <button id="add-note" className="btn btn-secondary" onClickCapture={toggleAddNote} data-list-id={noteList.id}><i className="bi bi-file-earmark-plus"></i></button>
