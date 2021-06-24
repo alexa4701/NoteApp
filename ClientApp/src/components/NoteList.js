@@ -43,6 +43,11 @@ const NoteList = ({ noteList, stateValues, handlers }) => {
         handlers.toggleEditList(noteList.id)
     }
 
+    const handleDelete = (event) => {
+        event.stopPropagation()
+        handlers.deleteList(noteList.id)
+    }
+
     return (
         <ListGroup className="note-list" data-list-id={noteList.id}>
             <NoteAddModal 
@@ -71,8 +76,15 @@ const NoteList = ({ noteList, stateValues, handlers }) => {
                     }}
                 />
                 <ButtonGroup className="note-list-btns" data-list-id={noteList.id}>
-                    <button id="add-note" className="btn btn-secondary" onClickCapture={toggleAddNote} data-list-id={noteList.id}><i className="bi bi-file-earmark-plus"></i></button>
-                    <button id="edit-list" className="btn btn-secondary" onClickCapture={toggleEditList} data-list-id={noteList.id}><i className="bi bi-pencil"></i></button>
+                    <button id="add-note" className="btn btn-secondary" onClickCapture={toggleAddNote} data-list-id={noteList.id}>
+                        <i className="bi bi-file-earmark-plus"></i>
+                    </button>
+                    <button id="edit-list" className="btn btn-secondary" onClickCapture={toggleEditList} data-list-id={noteList.id}>
+                        <i className="bi bi-pencil"></i>
+                    </button>
+                    <button id="edit-list" className="btn btn-secondary" onClickCapture={handleDelete} data-list-id={noteList.id}>
+                        <i className="bi bi-trash"></i>
+                    </button>
                 </ButtonGroup>
             </ListGroupItem>
             <Collapse isOpen={stateValues.open}>
