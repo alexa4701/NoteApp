@@ -1,7 +1,8 @@
 import React, { useState, useEffect} from 'react'
-import { Row, Col } from 'reactstrap'
-import ListAddModal from './ListAddModal'
+import { ButtonGroup, Row, Col } from 'reactstrap'
+import NoteBookAddModal from './NoteBookAddModal'
 import NoteList from './NoteList'
+import NoteListAddModal from './NoteListAddModal'
 import notebookService from '../services/notebooks'
 import noteService from '../services/notes'
 import notelistService from '../services/notelists'
@@ -18,19 +19,20 @@ const Home = () => {
     const [addNoteModalShown, setAddNoteModalShown] = useState(false)
     const [currentListId, setCurrentListId] = useState(0)
     const [currentListsOpen, setCurrentListsOpen] = useState([])
-    const [currentNotebookId, setCurrentNotebookId] = useState(2)
+    const [currentNotebookId, setCurrentNotebookId] = useState(0)
     const [currentNoteId, setCurrentNoteId] = useState(0)
     const [editListShown, setEditListShown] = useState([])
     const [editNoteModalShown, setEditNoteModalShown] = useState(false)
     const [listTitle, setListTitle] = useState("")
     const [notebook, setNotebook] = useState([])
+    const [notebookList, setNotebookList] = useState([])
     const [noteDescription, setNoteDescription] = useState("")
     const [noteTitle, setNoteTitle] = useState("")
     
 
-    const getNoteBook = () => {
+    const getNotebook = (notebookId) => {
         notebookService
-            .get(currentNotebookId)
+            .get(notebookId)
             .then(notebook => {
                 const size = notebook.noteLists.length
                 setNotebook(notebook)
@@ -38,7 +40,17 @@ const Home = () => {
                 setEditListShown(new Array(size).fill(false))
             })
     }
-    useEffect(getNoteBook, [])
+
+    const getNotebooks = () => {
+        notebookService
+            .getAll()
+            .then(notebooks => {
+                setNotebookList(notebooks)
+                setCurrentNotebookId(notebooks[0].id)
+                getNotebook(notebooks[0].id)
+            })
+    }
+    useEffect(getNotebooks, [])
 
 
     const handleAddList = (event) => {
@@ -51,7 +63,7 @@ const Home = () => {
             notelistService
                 .add(currentNotebookId, newList)
                 .then(() => {
-                    getNoteBook()
+                    getNotebook(currentNotebookId)
                 })
         }
         else {
@@ -69,7 +81,7 @@ const Home = () => {
                 notelistService
                     .edit(currentListId, newList)
                     .then(() => {
-                        getNoteBook()
+                        getNotebook(currentNotebookId)
                     })
             }
             else {
@@ -84,7 +96,7 @@ const Home = () => {
             notelistService
                 .remove(listId)
                 .then(() => {
-                    getNoteBook()
+                    getNotebook(currentNotebookId)
                 })
         }
     }
@@ -110,7 +122,7 @@ const Home = () => {
             noteService
                 .add(currentListId, newNote)
                 .then(() => {
-                    getNoteBook()
+                    getNotebook(currentNotebookId)
                     toggleAddNoteModal()
                 })
         } else {
@@ -130,7 +142,7 @@ const Home = () => {
         noteService
             .edit(currentNoteId, newNote)
             .then(() => {
-                getNoteBook()
+                getNotebook(currentNotebookId)
                 toggleEditNoteModal(newNote, currentListId)
             })
     }
@@ -141,9 +153,16 @@ const Home = () => {
             noteService
                 .remove(noteId)
                 .then(() => {
-                    getNoteBook()
+                    getNotebook(currentNotebookId)
                 })
         }
+    }
+
+    const handleChangeNotebook = (event) => {
+        // called when switching notebooks - changes currentNotebookId
+        const notebookId = event.target.value
+        setCurrentNotebookId(notebookId)
+        getNotebook(notebookId)
     }
 
     const handleListTitleChange = (event) => {
@@ -210,7 +229,7 @@ const Home = () => {
 
     return (
         <Row>
-            <ListAddModal 
+            <NoteListAddModal 
                 stateValues={{
                     "open": addListModalShown,
                     "newTitle": listTitle,
@@ -221,58 +240,78 @@ const Home = () => {
                     "addList": handleAddList
                 }}
             />
-            <Col xs="1"></Col>
-            <Col xs="10">
+            <Col xs="12">
                 <Row>
                     <Col xs="3">&nbsp;</Col>
-                    <Col xs="6">
-                        <h2 className="notebook-title">{notebook.title}</h2>
+                    <Col xs="6" className="d-flex flex-column align-content-center">
+                        <label htmlFor="notebooks">Current Notebook:</label>
+                        <select name="notebooks" id="notebooks" onChange={handleChangeNotebook} value={currentNotebookId}>
+                            {notebookList.map(notebook => {
+                                return <option key={notebook.id} value={notebook.id}>{notebook.title}</option>
+                            })}
+                        </select>
                     </Col>
                     <Col xs="3">&nbsp;</Col>
                 </Row>
                 <Row>
-                    <Col xs="12">
-                        <button id="add-note" className="btn btn-secondary float-right" onClickCapture={toggleAddListModal}>
+                    <Col xs="6" className="d-flex justify-content-start">
+                        <ButtonGroup className="float-left">
+                            <button id="add-notebook" className="btn btn-secondary">
+                                <i className="bi bi-journal-plus"></i>
+                            </button>
+                            <button id="edit-notebook" className="btn btn-secondary">
+                                <i className="bi bi-pencil"></i>
+                            </button>
+                            <button id="delete-notebook" className="btn btn-secondary">
+                                <i className="bi bi-trash"></i>
+                            </button>
+                        </ButtonGroup>
+                    </Col>
+                    <Col xs="6">
+                        <button id="add-list" className="btn btn-secondary float-right" onClickCapture={toggleAddListModal}>
                             <i className="bi bi-file-earmark-plus"></i>
                         </button>
                     </Col>
                 </Row>
-                <ul>
-                    {(notebook.noteLists) 
-                        ? notebook.noteLists.map(notelist => {
-                            return <NoteList 
-                                        key ={notelist.id} 
-                                        noteList={notelist} 
-                                        stateValues={{
-                                            "open": currentListsOpen[notebook.noteLists.findIndex(openList => openList.id == notelist.id)],
-                                            "currentNoteId": currentNoteId,
-                                            "addNoteOpen": addNoteModalShown,
-                                            "editNoteOpen": editNoteModalShown,
-                                            "editListOpen": editListShown[notebook.noteLists.findIndex(openList => openList.id == notelist.id)],
-                                            "newNoteTitle": noteTitle,
-                                            "newNoteDescription": noteDescription,
-                                            "newListTitle": listTitle
-                                        }}
-                                        handlers={{
-                                            "open": handleOpenList,
-                                            "toggleAddNote": toggleAddNoteModal,
-                                            "toggleEditNote": toggleEditNoteModal,
-                                            "toggleEditList": toggleEditList,
-                                            "addNote": handleAddNote,
-                                            "editNote": handleEditNote,
-                                            "deleteNote": handleDeleteNote,
-                                            "noteTitleChange": handleNoteTitleChange,
-                                            "noteDescriptionChange": handleNoteDescriptionChange,
-                                            "listTitleChange": handleListTitleChange,
-                                            "editList": handleEditList,
-                                            "deleteList": handleDeleteList
-                                        }}
-                                    />
-                        }) 
-                        : "loading notebook..." }
-                </ul>
+                <Row>
+                    <Col xs="12" className="d-flex justify-content-start">
+                        <ul className="flex-fill">
+                            {(notebook.noteLists) 
+                                ? notebook.noteLists.map(notelist => {
+                                    return <NoteList 
+                                                key ={notelist.id} 
+                                                noteList={notelist} 
+                                                stateValues={{
+                                                    "open": currentListsOpen[notebook.noteLists.findIndex(openList => openList.id == notelist.id)],
+                                                    "currentNoteId": currentNoteId,
+                                                    "addNoteOpen": addNoteModalShown,
+                                                    "editNoteOpen": editNoteModalShown,
+                                                    "editListOpen": editListShown[notebook.noteLists.findIndex(openList => openList.id == notelist.id)],
+                                                    "newNoteTitle": noteTitle,
+                                                    "newNoteDescription": noteDescription,
+                                                    "newListTitle": listTitle
+                                                }}
+                                                handlers={{
+                                                    "open": handleOpenList,
+                                                    "toggleAddNote": toggleAddNoteModal,
+                                                    "toggleEditNote": toggleEditNoteModal,
+                                                    "toggleEditList": toggleEditList,
+                                                    "addNote": handleAddNote,
+                                                    "editNote": handleEditNote,
+                                                    "deleteNote": handleDeleteNote,
+                                                    "noteTitleChange": handleNoteTitleChange,
+                                                    "noteDescriptionChange": handleNoteDescriptionChange,
+                                                    "listTitleChange": handleListTitleChange,
+                                                    "editList": handleEditList,
+                                                    "deleteList": handleDeleteList
+                                                }}
+                                            />
+                                }) 
+                                : "loading notebook..." }
+                        </ul>
+                    </Col>
+                </Row>
             </Col>
-            <Col xs="1"></Col>
         </Row>
     )
 }

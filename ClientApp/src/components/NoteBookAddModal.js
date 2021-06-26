@@ -1,12 +1,12 @@
 import React from 'react'
 import { ButtonGroup, Form, FormGroup, Input, Label, Modal, ModalHeader, ModalBody } from 'reactstrap'
 
-const ListAddModal = ({ stateValues, handlers }) => {
+const NoteBookAddModal = ({ stateValues, handlers }) => {
     return (
         <Modal isOpen={stateValues.open} toggle={handlers.toggle}>
-            <ModalHeader>Add a new list</ModalHeader>
+            <ModalHeader>Add a new notebook</ModalHeader>
             <ModalBody>
-                <Form onSubmit={handlers.addList}>
+                <Form onSubmit={handlers.addNotebook}>
                     <FormGroup>
                         <Label for="new-title">Title</Label>
                         <Input name="new-title" value={stateValues.newTitle} onChange={handlers.newTitleChange}></Input>
@@ -22,4 +22,4 @@ const ListAddModal = ({ stateValues, handlers }) => {
     )
 }
 
-export default ListAddModal
+export default NoteBookAddModal
