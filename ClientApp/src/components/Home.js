@@ -1,6 +1,7 @@
 import React, { useState, useEffect} from 'react'
 import { ButtonGroup, Row, Col } from 'reactstrap'
 import NoteBookAddModal from './NoteBookAddModal'
+import NoteBookEditModal from './NoteBookEditModal'
 import NoteList from './NoteList'
 import NoteListAddModal from './NoteListAddModal'
 import notebookService from '../services/notebooks'
@@ -9,23 +10,24 @@ import notelistService from '../services/notelists'
 
 /*
     Todo: 
-    Add validation for forms
-    Implement switching Notebooks
-    Implement adding Notebooks
-    Implement deleting Notebooks
+    Add validation to Models (backend)
+    Implement completing notes - cross out when complete == true
 */
 const Home = () => {
     const [addListModalShown, setAddListModalShown] = useState(false)
+    const [addNotebookModalShown, setAddNotebookModalShown] = useState(false)
     const [addNoteModalShown, setAddNoteModalShown] = useState(false)
     const [currentListId, setCurrentListId] = useState(0)
     const [currentListsOpen, setCurrentListsOpen] = useState([])
     const [currentNotebookId, setCurrentNotebookId] = useState(0)
     const [currentNoteId, setCurrentNoteId] = useState(0)
     const [editListShown, setEditListShown] = useState([])
+    const [editNotebookModalShown, setEditNotebookModalShown] = useState(false)
     const [editNoteModalShown, setEditNoteModalShown] = useState(false)
     const [listTitle, setListTitle] = useState("")
     const [notebook, setNotebook] = useState([])
     const [notebookList, setNotebookList] = useState([])
+    const [notebookTitle, setNotebookTitle] = useState("")
     const [noteDescription, setNoteDescription] = useState("")
     const [noteTitle, setNoteTitle] = useState("")
     
@@ -52,6 +54,63 @@ const Home = () => {
     }
     useEffect(getNotebooks, [])
 
+    const handleAddNotebook = (event) => {
+        event.preventDefault()
+        if(notebookTitle !== "") {
+            console.log("adding notebook")
+            const newNotebook = {
+                "title": notebookTitle
+            }
+            notebookService
+                .add(newNotebook)
+                .then(() => {
+                    setNotebookTitle("")
+                    setAddNotebookModalShown(!addNotebookModalShown)
+                    getNotebooks()
+                })
+        }
+        else {
+            alert("Notebook title cannot be empty.")
+        }
+    }
+
+    const handleChangeNotebook = (event) => {
+        const notebookId = event.target.value
+        setCurrentNotebookId(notebookId)
+        getNotebook(notebookId)
+    }
+
+    const handleEditNotebook = (event) => {
+        event.preventDefault()
+        if(notebookTitle !== "") {
+            console.log("editing notebook")
+            const newNotebook = {
+                "id": currentNotebookId,
+                "title": notebookTitle
+            }
+            notebookService
+                .edit(currentNotebookId, newNotebook)
+                .then(() => {
+                    setNotebookTitle("")
+                    setEditNotebookModalShown(!editNotebookModalShown)
+                    getNotebooks()
+                })
+        }
+        else {
+            alert("Notebook title cannot be empty.")
+        }
+    }
+
+    const handleDeleteNotebook = () => {
+        if(window.confirm("Are you sure you want to delete the selected notebook?")) {
+            console.log(`Deleting notebook ${currentNotebookId}`)
+            notebookService
+                .remove(currentNotebookId)
+                .then(() => {
+                    getNotebooks()
+                })
+        }
+    }
 
     const handleAddList = (event) => {
         event.preventDefault()
@@ -67,7 +126,7 @@ const Home = () => {
                 })
         }
         else {
-            alert("Title cannot be empty.")
+            alert("List title cannot be empty.")
         }
     }
 
@@ -126,7 +185,7 @@ const Home = () => {
                     toggleAddNoteModal()
                 })
         } else {
-            alert("Description and title cannot be empty.")
+            alert("Note description and title cannot be empty.")
         }
     }
 
@@ -158,15 +217,12 @@ const Home = () => {
         }
     }
 
-    const handleChangeNotebook = (event) => {
-        // called when switching notebooks - changes currentNotebookId
-        const notebookId = event.target.value
-        setCurrentNotebookId(notebookId)
-        getNotebook(notebookId)
-    }
-
     const handleListTitleChange = (event) => {
         setListTitle(event.target.value)
+    }
+
+    const handleNotebookTitleChange = (event) => {
+        setNotebookTitle(event.target.value)
     }
 
     const handleNoteTitleChange = (event) => {
@@ -175,6 +231,22 @@ const Home = () => {
 
     const handleNoteDescriptionChange = (event) => {
         setNoteDescription(event.target.value)
+    }
+
+    const toggleAddNotebookModal = () => {
+        if(addNotebookModalShown) {
+            setNotebookTitle("")
+        }
+
+        setAddNotebookModalShown(!addNotebookModalShown)
+    }
+
+    const toggleEditNotebookModal = () => {
+        if(editNotebookModalShown) {
+            setNotebookTitle("")
+        }
+
+        setEditNotebookModalShown(!editNotebookModalShown)
     }
 
     const toggleAddListModal = (event) => {
@@ -240,6 +312,28 @@ const Home = () => {
                     "addList": handleAddList
                 }}
             />
+            <NoteBookAddModal 
+                stateValues={{
+                    "open": addNotebookModalShown,
+                    "newTitle": notebookTitle,
+                }} 
+                handlers={{
+                    "toggle": toggleAddNotebookModal,
+                    "newTitleChange": handleNotebookTitleChange,
+                    "addNotebook": handleAddNotebook
+                }}
+            />
+            <NoteBookEditModal 
+                stateValues={{
+                    "open": editNotebookModalShown,
+                    "newTitle": notebookTitle,
+                }} 
+                handlers={{
+                    "toggle": toggleEditNotebookModal,
+                    "newTitleChange": handleNotebookTitleChange,
+                    "editNotebook": handleEditNotebook
+                }}
+            />
             <Col xs="12">
                 <Row>
                     <Col xs="3">&nbsp;</Col>
@@ -256,13 +350,13 @@ const Home = () => {
                 <Row>
                     <Col xs="6" className="d-flex justify-content-start">
                         <ButtonGroup className="float-left">
-                            <button id="add-notebook" className="btn btn-secondary">
+                            <button id="add-notebook" className="btn btn-secondary" onClick={toggleAddNotebookModal}>
                                 <i className="bi bi-journal-plus"></i>
                             </button>
-                            <button id="edit-notebook" className="btn btn-secondary">
+                            <button id="edit-notebook" className="btn btn-secondary" onClick={toggleEditNotebookModal}>
                                 <i className="bi bi-pencil"></i>
                             </button>
-                            <button id="delete-notebook" className="btn btn-secondary">
+                            <button id="delete-notebook" className="btn btn-secondary" onClick={handleDeleteNotebook}>
                                 <i className="bi bi-trash"></i>
                             </button>
                         </ButtonGroup>
