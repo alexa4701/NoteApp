@@ -11,7 +11,6 @@ namespace NoteApp.Domain.Models
         [Required]
         public string Title { get; set; }
         
-        [StringLength(50, MinimumLength = 1)]
         [Required]
         public string Description { get; set; }
         public bool Complete { get; set; }
