@@ -10,8 +10,10 @@ import notelistService from '../services/notelists'
 
 /*
     Todo: 
-    Add validation to Models (backend)
     Implement completing notes - cross out when complete == true
+    Add validation to Models (backend)
+    Add users, logging in/registering
+    Improve notes - bullet lists, formatting, files, etc.
 */
 const Home = () => {
     const [addListModalShown, setAddListModalShown] = useState(false)
