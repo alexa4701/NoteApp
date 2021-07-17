@@ -16,9 +16,14 @@ const edit = (id, note) => {
     return request.then(response => response.data)
 }
 
+const toggleComplete = (id) => {
+    const request = axios.put(`${baseURL}/${id}/ToggleNoteComplete`)
+    return request.then(response => response.data)
+}
+
 const remove = (id) => {
     const request = axios.delete(`${baseURL}/${id}`)
     return request.then(response => response.data)
 }
 
-export default { get, add, edit, remove }
+export default { get, add, edit, toggleComplete, remove }

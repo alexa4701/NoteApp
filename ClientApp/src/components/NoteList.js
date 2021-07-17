@@ -2,19 +2,7 @@ import React, { useState } from 'react'
 import { ButtonGroup, Collapse, ListGroup, ListGroupItem } from 'reactstrap'
 import Note from './Note'
 import NoteAddModal from './NoteAddModal'
-
-
-const NoteListTitle = ({ title, stateValues, handlers }) => {
-    // if enabled - change title to input & button for editing/submitting
-    return (
-        <div>
-            {(stateValues.editing) 
-                ? <input type="text" value={stateValues.newTitle} onChange={handlers.titleChange} onKeyUp={handlers.editList}></input>
-                : <h2 className="note-list-title">{title}</h2>
-            }
-        </div>
-    )
-}
+import NoteListTitle from './NoteListTitle'
 
 const NoteList = ({ noteList, stateValues, handlers }) => {
     const size = noteList.notes.length
@@ -25,15 +13,14 @@ const NoteList = ({ noteList, stateValues, handlers }) => {
         handlers.open(noteList.id)
     }
 
-    const handleOpenNote = (noteId) => {
+    const handleNoteOpen = (noteId) => {
         let newNotesOpen = new Array(size).fill('').map((noteOpen, index) => noteOpen = currentNotesOpen[index])
         let selectedNoteIndex = noteList.notes.findIndex(note => note.id == noteId)
         newNotesOpen[selectedNoteIndex] = !newNotesOpen[selectedNoteIndex]
         setCurrentNotesOpen(newNotesOpen)
     }
 
-    const toggleAddNote = (event) => {
-        //event.stopPropagation()
+    const toggleAddNote = () => {
         handlers.toggleAddNote(noteList.id)
     }
 
@@ -95,15 +82,17 @@ const NoteList = ({ noteList, stateValues, handlers }) => {
                             "open": currentNotesOpen[noteList.notes.findIndex(n => n.id == note.id)],
                             "editNoteOpen": stateValues.editNoteOpen,
                             "newTitle": stateValues.newNoteTitle,
-                            "newDescription": stateValues.newNoteDescription
+                            "newDescription": stateValues.newNoteDescription,
+                            "complete": stateValues.notesComplete.includes(note.id)
                         }}
                         handlers={{
-                            "open": handleOpenNote,
+                            "open": handleNoteOpen,
                             "toggleEdit": handlers.toggleEditNote,
                             "editNote": handlers.editNote,
                             "deleteNote": handlers.deleteNote,
                             "newTitleChange": handlers.noteTitleChange,
                             "newDescriptionChange": handlers.noteDescriptionChange,
+                            "complete": handlers.complete
                         }}
                     />
                 )}

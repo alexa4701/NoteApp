@@ -52,3 +52,7 @@ code {
   font-size: 11pt;
   height: 100%;
 }
+
+.note-complete {
+  text-decoration: line-through;
+}

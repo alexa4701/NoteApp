@@ -10,8 +10,6 @@ import notelistService from '../services/notelists'
 
 /*
     Todo: 
-    Implement completing notes - cross out when complete == true
-    Add validation to Models (backend)
     Add users, logging in/registering
     Improve notes - bullet lists, formatting, files, etc.
 */
@@ -32,17 +30,28 @@ const Home = () => {
     const [notebookTitle, setNotebookTitle] = useState("")
     const [noteDescription, setNoteDescription] = useState("")
     const [noteTitle, setNoteTitle] = useState("")
+    const [notesComplete, setNotesComplete] = useState([])
     
+    const getCompletedNotes = (notebook) => {
+        let completedNotes = []
+
+        notebook.noteLists.forEach(list => {
+            list.notes.forEach(note => (note.complete) ? completedNotes.push(note.id) : false)
+        })
+        setNotesComplete([...completedNotes])
+    }
 
     const getNotebook = (notebookId) => {
         notebookService
             .get(notebookId)
             .then(notebook => {
                 const size = notebook.noteLists.length
+                getCompletedNotes(notebook)
                 setNotebook(notebook)
-                setCurrentListsOpen(new Array(size).fill(false))
                 setEditListShown(new Array(size).fill(false))
+
             })
+            .catch(e => alert("Notebook failed to load."))
     }
 
     const getNotebooks = () => {
@@ -53,13 +62,13 @@ const Home = () => {
                 setCurrentNotebookId(notebooks[0].id)
                 getNotebook(notebooks[0].id)
             })
+            .catch(e => alert("Notebook list failed to load."))
     }
     useEffect(getNotebooks, [])
 
     const handleAddNotebook = (event) => {
         event.preventDefault()
         if(notebookTitle !== "") {
-            console.log("adding notebook")
             const newNotebook = {
                 "title": notebookTitle
             }
@@ -70,6 +79,7 @@ const Home = () => {
                     setAddNotebookModalShown(!addNotebookModalShown)
                     getNotebooks()
                 })
+                .catch(e => alert("Request failed :("))
         }
         else {
             alert("Notebook title cannot be empty.")
@@ -85,7 +95,6 @@ const Home = () => {
     const handleEditNotebook = (event) => {
         event.preventDefault()
         if(notebookTitle !== "") {
-            console.log("editing notebook")
             const newNotebook = {
                 "id": currentNotebookId,
                 "title": notebookTitle
@@ -97,6 +106,7 @@ const Home = () => {
                     setEditNotebookModalShown(!editNotebookModalShown)
                     getNotebooks()
                 })
+                .catch(e => alert("Request failed :("))
         }
         else {
             alert("Notebook title cannot be empty.")
@@ -105,19 +115,18 @@ const Home = () => {
 
     const handleDeleteNotebook = () => {
         if(window.confirm("Are you sure you want to delete the selected notebook?")) {
-            console.log(`Deleting notebook ${currentNotebookId}`)
             notebookService
                 .remove(currentNotebookId)
                 .then(() => {
                     getNotebooks()
                 })
+                .catch(e => alert("Request failed :("))
         }
     }
 
     const handleAddList = (event) => {
         event.preventDefault()
         if(listTitle !== "") {
-            console.log(`adding list to notebook id: ${currentNotebookId}`)
             const newList = {
                 "title": listTitle
             }
@@ -126,6 +135,7 @@ const Home = () => {
                 .then(() => {
                     getNotebook(currentNotebookId)
                 })
+                .catch(e => alert("Request failed :("))
         }
         else {
             alert("List title cannot be empty.")
@@ -144,6 +154,7 @@ const Home = () => {
                     .then(() => {
                         getNotebook(currentNotebookId)
                     })
+                    .catch(e => alert("Request failed :("))
             }
             else {
                 alert("Title cannot be empty")
@@ -153,12 +164,12 @@ const Home = () => {
 
     const handleDeleteList = (listId) => {
         if(window.confirm("Are you sure you want to delete this list?")) {
-            console.log(`Deleting list ${listId}`)
             notelistService
                 .remove(listId)
                 .then(() => {
                     getNotebook(currentNotebookId)
                 })
+                .catch(e => alert("Request failed :("))
         }
     }
 
@@ -186,6 +197,7 @@ const Home = () => {
                     getNotebook(currentNotebookId)
                     toggleAddNoteModal()
                 })
+                .catch(e => alert("Request failed :("))
         } else {
             alert("Note description and title cannot be empty.")
         }
@@ -198,7 +210,7 @@ const Home = () => {
             "noteListId": currentListId,
             "title": noteTitle,
             "description": noteDescription,
-            "complete": false // change later
+            "complete": false
         }
         noteService
             .edit(currentNoteId, newNote)
@@ -206,16 +218,35 @@ const Home = () => {
                 getNotebook(currentNotebookId)
                 toggleEditNoteModal(newNote, currentListId)
             })
+            .catch(e => alert("Request failed :("))
+    }
+
+    const handleCompleteNote = (noteId) => {
+        let newNotesComplete = [...notesComplete]
+        if(!newNotesComplete.includes(noteId)) {
+            newNotesComplete.push(noteId)
+        }
+        else {
+            let index = newNotesComplete.indexOf(noteId)
+            newNotesComplete.splice(index, 1)
+        }
+        noteService
+            .toggleComplete(noteId)
+            .then(() => {
+                setNotesComplete(newNotesComplete)
+                getNotebook(currentNotebookId)
+            })
+            .catch(e => alert("Request failed :("))
     }
 
     const handleDeleteNote = (noteId) => {
         if(window.confirm("Are you sure you want to delete this note?")) {
-            console.log(`deleting note id: ${noteId}`)
             noteService
                 .remove(noteId)
                 .then(() => {
                     getNotebook(currentNotebookId)
                 })
+                .catch(e => alert("Request failed :("))
         }
     }
 
@@ -253,7 +284,6 @@ const Home = () => {
 
     const toggleAddListModal = (event) => {
         event.stopPropagation()
-        console.log(`Toggling add list for notebook id: ${currentNotebookId}`)
         if(addListModalShown) {
             setListTitle("")
         }
@@ -385,7 +415,8 @@ const Home = () => {
                                                     "editListOpen": editListShown[notebook.noteLists.findIndex(openList => openList.id == notelist.id)],
                                                     "newNoteTitle": noteTitle,
                                                     "newNoteDescription": noteDescription,
-                                                    "newListTitle": listTitle
+                                                    "newListTitle": listTitle,
+                                                    "notesComplete": notesComplete
                                                 }}
                                                 handlers={{
                                                     "open": handleOpenList,
@@ -394,6 +425,7 @@ const Home = () => {
                                                     "toggleEditList": toggleEditList,
                                                     "addNote": handleAddNote,
                                                     "editNote": handleEditNote,
+                                                    "complete": handleCompleteNote,
                                                     "deleteNote": handleDeleteNote,
                                                     "noteTitleChange": handleNoteTitleChange,
                                                     "noteDescriptionChange": handleNoteDescriptionChange,

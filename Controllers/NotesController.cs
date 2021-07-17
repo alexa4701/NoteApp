@@ -87,6 +87,30 @@ namespace NoteApp.Controllers
             return NoContent();
         }
 
+        // PUT: api/Notes/5/Complete
+        // Replace the selected note obj with updated note obj
+        [HttpPut("{noteId}/{action}")]
+        public async Task<IActionResult> ToggleNoteComplete(long noteId, string action)
+        {
+            Note note = await _context.Notes.FirstOrDefaultAsync(n => n.Id == noteId);
+            if (note == null)
+            {
+                return NotFound();
+            }
+
+            note.Complete = !note.Complete;
+            try
+            {
+                await _context.SaveChangesAsync();
+            }
+            catch (DbUpdateConcurrencyException) when (!(_context.Notes.Any(n => n.Id == noteId)))
+            {
+                return NotFound();
+            }
+
+            return NoContent();
+        }
+
         // DELETE: api/Notes/5
         // Delete the note with id == noteId
         [HttpDelete("{noteId}")]
