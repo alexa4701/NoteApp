@@ -1,5 +1,5 @@
 import React from 'react'
-import { Row, Col, ButtonGroup, Collapse, ListGroupItem } from 'reactstrap'
+import { ListGroupItem } from 'reactstrap'
 import NoteCollapse from './NoteCollapse'
 import NoteEditModal from './NoteEditModal'
 import NoteSummary from './NoteSummary'
