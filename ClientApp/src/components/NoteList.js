@@ -20,17 +20,16 @@ const NoteList = ({ noteList, stateValues, handlers }) => {
     const size = noteList.notes.length
     const [currentNotesOpen, setCurrentNotesOpen] = useState(new Array(size).fill(false))
 
-    const handleNoteOpen = (event) => {
-        const noteId = event.target.parentElement.getAttribute("data-note-id")
+    const handleListOpen = (event) => {
+        event.stopPropagation()
+        handlers.open(noteList.id)
+    }
+
+    const handleOpenNote = (noteId) => {
         let newNotesOpen = new Array(size).fill('').map((noteOpen, index) => noteOpen = currentNotesOpen[index])
         let selectedNoteIndex = noteList.notes.findIndex(note => note.id == noteId)
         newNotesOpen[selectedNoteIndex] = !newNotesOpen[selectedNoteIndex]
         setCurrentNotesOpen(newNotesOpen)
-    }
-
-    const handleListOpen = (event) => {
-        event.stopPropagation()
-        handlers.open(noteList.id)
     }
 
     const toggleAddNote = (event) => {
@@ -99,7 +98,7 @@ const NoteList = ({ noteList, stateValues, handlers }) => {
                             "newDescription": stateValues.newNoteDescription
                         }}
                         handlers={{
-                            "open": handleNoteOpen,
+                            "open": handleOpenNote,
                             "toggleEdit": handlers.toggleEditNote,
                             "editNote": handlers.editNote,
                             "deleteNote": handlers.deleteNote,
