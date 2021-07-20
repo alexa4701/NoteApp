@@ -10,8 +10,8 @@ import notelistService from '../services/notelists'
 
 /*
     Todo: 
-    Add users, logging in/registering
-    Improve notes - bullet lists, formatting, files, etc.
+    Add users, logging in/registering with JWT auth
+    Improve todo items - formatting, dates (started & due)
 */
 const Home = () => {
     const [addListModalShown, setAddListModalShown] = useState(false)
